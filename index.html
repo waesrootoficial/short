@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pocima Clicker Multiplayer</title>
+<title>Pocima Clicker</title>
 <style>
 body {
   margin: 0;
@@ -40,7 +40,6 @@ button {
   background: #ff5722;
   color: #fff;
 }
-#roomSelect { margin-top: 20px; }
 </style>
 </head>
 <body>
@@ -49,60 +48,71 @@ button {
   <div class="playerArea" id="player1">
     <h2>Tú</h2>
     <button id="clickBtn">💊 Click Potion</button>
+    <button id="upgradeBtn">✨ Mejorar Pociones</button>
     <p>Pociones: <span id="player1Score">0</span></p>
+    <p>Nivel: <span id="playerLevel">1</span></p>
   </div>
+
   <div class="playerArea" id="player2">
-    <h2>Oponente</h2>
+    <h2>Oponente (simulado)</h2>
     <p>Pociones: <span id="player2Score">0</span></p>
+    <p>Nivel: <span id="opponentLevel">1</span></p>
   </div>
 </div>
 
-<div id="roomSelect">
-  <input type="text" id="roomInput" placeholder="Nombre de sala">
-  <button id="joinBtn">Unirse / Crear sala</button>
-</div>
-
-<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script>
-// --- Conexión ---
-const socket = io();
+let playerScore = parseInt(localStorage.getItem('playerScore')) || 0;
+let playerLevel = parseInt(localStorage.getItem('playerLevel')) || 1;
+let opponentScore = 0;
+let opponentLevel = 1;
 
-// --- Elementos ---
-let roomName = '';
 const player1ScoreEl = document.getElementById('player1Score');
+const playerLevelEl = document.getElementById('playerLevel');
 const player2ScoreEl = document.getElementById('player2Score');
+const opponentLevelEl = document.getElementById('opponentLevel');
 const clickBtn = document.getElementById('clickBtn');
-const joinBtn = document.getElementById('joinBtn');
-const roomInput = document.getElementById('roomInput');
+const upgradeBtn = document.getElementById('upgradeBtn');
 
-// --- Unirse a sala ---
-joinBtn.onclick = () => {
-  roomName = roomInput.value.trim();
-  if(roomName) {
-    socket.emit('joinRoom', roomName);
-    document.getElementById('roomSelect').style.display = 'none';
+function updateUI() {
+  player1ScoreEl.textContent = playerScore;
+  playerLevelEl.textContent = playerLevel;
+  player2ScoreEl.textContent = opponentScore;
+  opponentLevelEl.textContent = opponentLevel;
+}
+
+// Simulación de oponente automático
+setInterval(() => {
+  opponentScore += Math.floor(Math.random() * 5) + 1;
+  if(opponentScore >= opponentLevel * 50){
+    opponentScore = 0;
+    opponentLevel += 1;
   }
-};
+  updateUI();
+}, 2000);
 
-// --- Click en poción ---
+// Click del jugador
 clickBtn.onclick = () => {
-  if(roomName) socket.emit('clickPotion', roomName);
+  playerScore += 1 * playerLevel;
+  localStorage.setItem('playerScore', playerScore);
+  updateUI();
 };
 
-// --- Actualizar puntuaciones ---
-socket.on('updatePlayers', players => {
-  const ids = Object.keys(players);
-  if(ids[0] === socket.id) {
-    player1ScoreEl.textContent = players[socket.id].clicks;
-    player2ScoreEl.textContent = ids[1] ? players[ids[1]].clicks : 0;
-  } else if(ids[1] === socket.id){
-    player1ScoreEl.textContent = players[ids[0]] ? players[ids[0]].clicks : 0;
-    player2ScoreEl.textContent = players[socket.id].clicks;
+// Mejorar pociones
+upgradeBtn.onclick = () => {
+  if(playerScore >= playerLevel * 10){
+    playerScore -= playerLevel * 10;
+    playerLevel += 1;
+    localStorage.setItem('playerScore', playerScore);
+    localStorage.setItem('playerLevel', playerLevel);
+    updateUI();
   } else {
-    player2ScoreEl.textContent = ids[0] ? players[ids[0]].clicks : 0;
+    alert("No tienes suficientes pociones para mejorar!");
   }
-});
+};
+
+updateUI();
 </script>
+
 </body>
 </html>
 
