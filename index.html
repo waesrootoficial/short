@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pocima Clicker Multiplayer</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #222;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+#gameContainer {
+  display: flex;
+  gap: 20px;
+}
+.playerArea {
+  width: 200px;
+  height: 300px;
+  background: #333;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 10px;
+  border: none;
+  background: #ff5722;
+  color: #fff;
+}
+#roomSelect { margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<div id="gameContainer">
+  <div class="playerArea" id="player1">
+    <h2>Tú</h2>
+    <button id="clickBtn">💊 Click Potion</button>
+    <p>Pociones: <span id="player1Score">0</span></p>
+  </div>
+  <div class="playerArea" id="player2">
+    <h2>Oponente</h2>
+    <p>Pociones: <span id="player2Score">0</span></p>
+  </div>
+</div>
+
+<div id="roomSelect">
+  <input type="text" id="roomInput" placeholder="Nombre de sala">
+  <button id="joinBtn">Unirse / Crear sala</button>
+</div>
+
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+<script>
+// --- Conexión ---
+const socket = io();
+
+// --- Elementos ---
+let roomName = '';
+const player1ScoreEl = document.getElementById('player1Score');
+const player2ScoreEl = document.getElementById('player2Score');
+const clickBtn = document.getElementById('clickBtn');
+const joinBtn = document.getElementById('joinBtn');
+const roomInput = document.getElementById('roomInput');
+
+// --- Unirse a sala ---
+joinBtn.onclick = () => {
+  roomName = roomInput.value.trim();
+  if(roomName) {
+    socket.emit('joinRoom', roomName);
+    document.getElementById('roomSelect').style.display = 'none';
+  }
+};
+
+// --- Click en poción ---
+clickBtn.onclick = () => {
+  if(roomName) socket.emit('clickPotion', roomName);
+};
+
+// --- Actualizar puntuaciones ---
+socket.on('updatePlayers', players => {
+  const ids = Object.keys(players);
+  if(ids[0] === socket.id) {
+    player1ScoreEl.textContent = players[socket.id].clicks;
+    player2ScoreEl.textContent = ids[1] ? players[ids[1]].clicks : 0;
+  } else if(ids[1] === socket.id){
+    player1ScoreEl.textContent = players[ids[0]] ? players[ids[0]].clicks : 0;
+    player2ScoreEl.textContent = players[socket.id].clicks;
+  } else {
+    player2ScoreEl.textContent = ids[0] ? players[ids[0]].clicks : 0;
+  }
+});
+</script>
+</body>
+</html>
+
