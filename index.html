@@ -1,255 +1,156 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Rally Clicker — Juego Completo</title>
-  <style>
-    :root{
-      --bg:#071028; --panel:rgba(255,255,255,0.04); --accent:#ffb020; --muted:#9aa4b2; --glass:rgba(255,255,255,0.03);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#041024 0%, #08182a 100%);color:#e6eef6}
-    #app{display:flex;gap:18px;padding:16px;align-items:flex-start}
-    canvas{border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.6);background:linear-gradient(180deg,#071426 0,#02101a 100%)}
-    #side{width:360px;max-width:38vw}
-    .card{background:var(--panel);padding:12px;border-radius:10px;margin-bottom:12px}
-    .title{font-weight:700;margin-bottom:8px}
-    .small{font-size:13px;color:var(--muted)}
-    .controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    button{padding:8px 10px;border-radius:8px;border:0;background:#0b1220;color:#fff;cursor:pointer}
-    button.primary{background:var(--accent);color:#041426;font-weight:700}
-    .center{display:flex;justify-content:center;align-items:center}
-    .row{display:flex;gap:8px;align-items:center}
-    .stat{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
-    .ad-placeholder{height:90px;background:linear-gradient(90deg,#0b1220,#081a2a);display:flex;align-items:center;justify-content:center;border-radius:8px;color:var(--muted)}
-    footer.small{font-size:12px;color:#9aa4b2;margin-top:8px}
-    @media(max-width:980px){#app{flex-direction:column;align-items:center}#side{width:100%}}
-    /* mobile on-screen controls */
-    #mobileControls{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;display:none;gap:10px}
-    #mobileControls button{width:56px;height:56px;border-radius:50%;}
-    @media(max-width:700px){#mobileControls{display:flex}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Rally Clicker</title>
+<style>
+  body{margin:0;font-family:sans-serif;background:#081826;color:#fff;}
+  canvas{background:linear-gradient(#071426,#02101a);display:block;margin:0 auto;border-radius:12px;}
+  #ui{width:360px;margin:16px auto;}
+  .card{background:rgba(255,255,255,0.05);padding:12px;border-radius:10px;margin-bottom:12px;}
+  button{padding:8px 12px;border-radius:6px;border:0;background:#ffb020;color:#041426;cursor:pointer;font-weight:700;}
+  .row{display:flex;justify-content:space-between;align-items:center;margin-top:6px;}
+  .small{font-size:13px;color:#9aa4b2;}
+</style>
 </head>
 <body>
-  <div id="app">
-    <canvas id="game" width="1100" height="640"></canvas>
-    <div id="side">
-      <div class="card">
-        <div class="title">Rally Clicker — Estatus</div>
-        <div class="small">Controles: Flechas / WASD, Espacio freno, P pausa. En móvil, botones táctiles.</div>
-      </div>
-
-      <div class="card" id="statsCard">
-        <div class="title">Estadísticas</div>
-        <div class="stat"><div>Velocidad</div><div id="s_speed">0</div></div>
-        <div class="stat"><div>Distancia</div><div id="s_dist">0</div></div>
-        <div class="stat"><div>Puntuación</div><div id="s_score">0</div></div>
-        <div class="stat"><div>Vidas</div><div id="s_lives">3</div></div>
-        <div class="stat"><div>Potencia (⚡)</div><div id="s_cookies">0</div></div>
-        <div class="stat"><div>CPS</div><div id="s_cps">0</div></div>
-        <div class="stat"><div>Mejor</div><div id="s_best">0</div></div>
-      </div>
-
-      <div class="card">
-        <div class="title">Juego</div>
-        <div class="row"><button id="start" class="primary">Iniciar / Reiniciar</button><button id="pause">Pausa</button></div>
-        <div style="margin-top:10px" class="small">Pistas: 3 pistas aleatorias. Nitro disponible en tienda. Guardado automático cada 5s.</div>
-      </div>
-
-      <div class="card">
-        <div class="title">Tienda / Mejoras</div>
-        <div class="small" id="shop"></div>
-      </div>
-
-      <div class="card">
-        <div class="title">Vehículos Automáticos</div>
-        <div id="buildList" class="small"></div>
-      </div>
-
-      <div class="card">
-        <div class="title">Multiplicadores</div>
-        <div class="row"><button id="m2" class="primary">x2 CPS (500)</button><button id="m5" class="primary">x5 CPS (2500)</button></div>
-      </div>
-
-      <div class="card ad-placeholder center">Espacio para anuncio (placeholder)</div>
-
-      <div class="card">
-        <div class="title">Opciones</div>
-        <div class="controls small"><div>Sonido <input type="checkbox" id="soundToggle" checked></div><div><button id="resetSave">Reset Guardado</button></div></div>
-      </div>
-
-      <div class="card small center">
-        <div>Guardado local — comparte tu pantalla para ver el juego en acción.</div>
-        <footer class="small">Hecho por ti — pide más añadidos.</footer>
-      </div>
-    </div>
+<canvas id="game" width="1100" height="640"></canvas>
+<div id="ui">
+  <div class="card">
+    <div class="title">Super Rally Clicker</div>
+    <div class="row"><button id="start">Iniciar</button><button id="pause">Pausa</button></div>
   </div>
-
-  <!-- Mobile controls -->
-  <div id="mobileControls">
-    <button id="ml">◀</button>
-    <button id="ma">▲</button>
-    <button id="mr">▶</button>
-    <button id="mb">▼</button>
-    <button id="mn">NITRO</button>
+  <div class="card" id="stats">
+    <div class="small">Velocidad: <span id="speed">0</span></div>
+    <div class="small">Distancia: <span id="distance">0</span></div>
+    <div class="small">Puntuación: <span id="score">0</span></div>
+    <div class="small">Potencia ⚡: <span id="cookies">0</span></div>
+    <div class="small">CPS: <span id="cps">0</span></div>
   </div>
+  <div class="card" id="shop">
+    <div class="title">Tienda / Mejoras</div>
+  </div>
+</div>
+<script>
+// ======== Juego Rally + Clicker =======
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
 
-  <script>
-    /* ======================= Juego completo con adiciones ======================= */
-    // Canvas
-    const canvas = document.getElementById('game'); const ctx = canvas.getContext('2d'); const W = canvas.width, H = canvas.height;
+let running = false, paused=false;
 
-    // UI refs
-    const s_speed = document.getElementById('s_speed'); const s_dist = document.getElementById('s_dist'); const s_score = document.getElementById('s_score');
-    const s_lives = document.getElementById('s_lives'); const s_cookies = document.getElementById('s_cookies'); const s_cps = document.getElementById('s_cps'); const s_best = document.getElementById('s_best');
-    const startBtn = document.getElementById('start'); const pauseBtn = document.getElementById('pause'); const shopDiv = document.getElementById('shop'); const buildList = document.getElementById('buildList');
+// Estado jugador y clicker
+let state = {
+  x: W/2, y: H-140, speed:0, maxSpeed:900, accel:1300, brake:2500, drag:0.98,
+  lives:3, score:0, distance:0, cookies:0, cps:0, upgrade:0
+};
 
-    // Game state
-    let running=false, paused=false, lastTs=0;
-    const saveKey = 'rally_clicker_save_v1';
+// Obstáculos
+let obstacles=[], spawnTimer=0;
 
-    const state = {
-      speed:0, maxSpeed:900, accel:1300, brake:2500, drag:0.98,
-      x: W/2, y: H-140, angle:0,
-      lives:3, score:0, distance:0, best: parseInt(localStorage.getItem('rally_best')||'0',10),
-      cookies: parseInt(localStorage.getItem('rally_cookies')||'0',10), cps: parseInt(localStorage.getItem('rally_cps')||'0',10),
-      upgradeLevel: parseInt(localStorage.getItem('rally_upg')||'0',10), nitro:2, track:0
+// Construcciones automáticas tipo clicker
+let buildings=[
+  {name:'Moto', base:50, cps:1, count:0},
+  {name:'Coche Pro', base:200, cps:5, count:0},
+  {name:'SuperCoche', base:1000, cps:20, count:0}
+];
+
+// UI refs
+const speedUI=document.getElementById('speed');
+const distanceUI=document.getElementById('distance');
+const scoreUI=document.getElementById('score');
+const cookiesUI=document.getElementById('cookies');
+const cpsUI=document.getElementById('cps');
+const startBtn=document.getElementById('start');
+const pauseBtn=document.getElementById('pause');
+const shopDiv=document.getElementById('shop');
+
+// Controles
+const keys={};
+window.addEventListener('keydown', e=>{ keys[e.key.toLowerCase()]=true; if(e.key=='p') paused=!paused; });
+window.addEventListener('keyup', e=>{ keys[e.key.toLowerCase()]=false; });
+
+// Shop render
+function renderShop(){
+  shopDiv.innerHTML='';
+  buildings.forEach((b,i)=>{
+    const cost = Math.floor(b.base*Math.pow(1.3,b.count));
+    const el=document.createElement('div');
+    el.className='small';
+    el.innerHTML=`${b.name} (x<span id='bc${i}'>${b.count}</span>) — Coste ${cost} ⚡ <button data-i='${i}'>Comprar</button>`;
+    shopDiv.appendChild(el);
+    el.querySelector('button').onclick=()=>{
+      if(state.cookies>=cost){ state.cookies-=Math.floor(cost); b.count++; state.cps+=b.cps;
+      el.querySelector('#bc'+i).textContent=b.count; updateUI(); }
     };
+  });
+}
+renderShop();
 
-    s_best.textContent = state.best;
+// Clicker button
+const genBtn=document.createElement('button'); genBtn.textContent='+1 ⚡';
+genBtn.onclick=()=>{ state.cookies++; updateUI(); };
+shopDiv.appendChild(genBtn);
 
-    // Road
-    const tracks = [ {name:'Desierto', color:'#3b2b00'}, {name:'Bosque', color:'#073d14'}, {name:'Ciudad', color:'#2f3240'} ];
-    const road = {x: W/2, width:520, laneCount:3}; const laneWidth = road.width / road.laneCount;
+// Actualización UI
+function updateUI(){
+  speedUI.textContent=Math.round(state.speed);
+  distanceUI.textContent=Math.round(state.distance);
+  scoreUI.textContent=Math.round(state.score);
+  cookiesUI.textContent=Math.round(state.cookies);
+  cpsUI.textContent=Math.round(state.cps);
+}
 
-    // Player
-    const player = {w:40,h:68,color:'#ffb020'};
+// Spawn obstáculos
+function spawnObstacle(){
+  obstacles.push({x:Math.random()*(W-80)+40, y:-120, w:40, h:60, speed:200+Math.random()*200});
+}
 
-    // Obstacles
-    let obstacles=[]; let spawnTimer=0;
+// Update juego
+function update(dt){
+  if(paused) return;
+  const up=keys['arrowup']||keys['w'], down=keys['arrowdown']||keys['s'], left=keys['arrowleft']||keys['a'], right=keys['arrowright']||keys['d'];
+  if(up) state.speed+=state.accel*dt;
+  if(down) state.speed-=state.brake*dt;
+  state.speed*=Math.pow(state.drag, dt*60);
+  state.speed=Math.max(-200, Math.min(state.maxSpeed+state.upgrade*50,state.speed));
 
-    // Clicker/buildings
-    const buildings = [ {name:'Moto', base:60, cps:1, count: parseInt(localStorage.getItem('b0')||'0',10)}, {name:'Coche Pro', base:240, cps:5, count: parseInt(localStorage.getItem('b1')||'0',10)}, {name:'SuperCoche', base:1200, cps:20, count: parseInt(localStorage.getItem('b2')||'0',10)} ];
+  if(left) state.x-=state.speed*dt*0.3;
+  if(right) state.x+=state.speed*dt*0.3;
+  state.x=Math.max(40, Math.min(W-40,state.x));
 
-    // Shop items (nitro, skins, instant boost)
-    const shop = [ {id:'nitro',name:'Tanque Nitro +1', cost:300, action:()=>{ state.nitro++; }}, {id:'boost',name:'Boost +300 puntos', cost:120, action:()=>{ state.score+=300; }}, {id:'skin1',name:'Skin Azul', cost:200, action:()=>{ player.color='#60a5fa'; }} ];
+  state.distance+=state.speed*dt*0.1; state.score+=state.speed*dt*0.05;
 
-    // Sounds (simple beeps)
-    const audioCtx = window.AudioContext? new AudioContext() : null;
-    function beep(freq,dur,vol=0.02){ if(!audioCtx || !document.getElementById('soundToggle').checked) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sine'; o.frequency.value = freq; g.gain.value=vol; o.connect(g); g.connect(audioCtx.destination); o.start(); setTimeout(()=>{ o.stop(); }, dur); }
+  spawnTimer+=dt;
+  if(spawnTimer>0.8){ spawnObstacle(); spawnTimer=0; }
+  for(let i=obstacles.length-1;i>=0;i--){
+    obstacles[i].y+=obstacles[i].speed*dt+state.speed*0.1;
+    if(obstacles[i].y>H+100) obstacles.splice(i,1);
+  }
+  // Clicker producción automática
+  state.cookies+=state.cps*dt;
+  updateUI();
+}
 
-    // Helpers
-    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-    function saveAll(){
-      const pack = {state, buildings}; localStorage.setItem(saveKey, JSON.stringify(pack));
-      localStorage.setItem('rally_best', state.best); localStorage.setItem('rally_cookies', state.cookies); localStorage.setItem('rally_cps', state.cps); localStorage.setItem('rally_upg', state.upgradeLevel);
-      buildings.forEach((b,i)=> localStorage.setItem('b'+i, b.count));
-    }
-    function loadAll(){ const raw = localStorage.getItem(saveKey); if(raw){ try{ const pack = JSON.parse(raw); Object.assign(state, pack.state || {}); if(pack.buildings) pack.buildings.forEach((b,i)=> buildings[i] && (buildings[i].count=b.count)); }catch(e){} } }
+// Render
+function render(){
+  ctx.clearRect(0,0,W,H);
+  // carretera
+  ctx.fillStyle='#222'; ctx.fillRect(0,0,W,H);
+  // jugador
+  ctx.fillStyle='#ffb020'; ctx.fillRect(state.x-20,state.y-34,40,68);
+  // obstáculos
+  ctx.fillStyle='#ff6b6b'; obstacles.forEach(ob=>{ ctx.fillRect(ob.x-ob.w/2,ob.y-ob.h/2,ob.w,ob.h); });
+}
 
-    loadAll();
+// Loop
+let lastTs=performance.now();
+function loop(ts){ if(!running) return; const dt=Math.min(1/30,(ts-lastTs)/1000); lastTs=ts; lastTs=ts; update(dt); render(); requestAnimationFrame(loop);}
 
-    // UI: build shop and buildings
-    function renderShop(){ shopDiv.innerHTML = '';
-      shop.forEach(s=>{
-        const el = document.createElement('div'); el.className='small'; el.innerHTML = `${s.name} — ${s.cost} ⚡ <button data-id='${s.id}'>Comprar</button>`; shopDiv.appendChild(el);
-        el.querySelector('button').onclick = ()=>{ if(state.cookies>=s.cost){ state.cookies -= s.cost; s.action(); updateUI(); saveAll(); beep(880,80); } };
-      });
-    }
-
-    function renderBuilds(){ buildList.innerHTML=''; buildings.forEach((b,i)=>{
-      const cost = Math.floor(b.base*Math.pow(1.33,b.count));
-      const el = document.createElement('div'); el.className='small'; el.innerHTML = `${b.name} (x<span id='bc${i}'>${b.count}</span>) — Coste <span id='bp${i}'>${cost}</span> ⚡ <button data-i='${i}'>Comprar</button>`; buildList.appendChild(el);
-      el.querySelector('button').onclick = ()=>{ if(state.cookies>=cost){ state.cookies-=Math.floor(cost); b.count++; state.cps += b.cps; el.querySelector('#bc'+i).textContent = b.count; el.querySelector('#bp'+i).textContent = Math.floor(b.base*Math.pow(1.33,b.count)); updateUI(); saveAll(); beep(700,80);} };
-    }); }
-
-    renderShop(); renderBuilds();
-
-    // Controls
-    const keys = {}; window.addEventListener('keydown',e=>{ keys[e.key.toLowerCase()]=true; if(e.key==='p' || e.key==='P'){ togglePause(); } }); window.addEventListener('keyup',e=>{ keys[e.key.toLowerCase()]=false; });
-    // Mobile buttons
-    ['ml','ma','mr','mb','mn'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('touchstart', ()=> keys[id]=true); if(el) el.addEventListener('touchend', ()=> keys[id]=false); if(el) el.addEventListener('mousedown', ()=> keys[id]=true); if(el) el.addEventListener('mouseup', ()=> keys[id]=false); });
-
-    startBtn.onclick=()=>{ resetGame(); startGame(); beep(1000,80); };
-    pauseBtn.onclick=()=>{ togglePause(); };
-    document.getElementById('m2').onclick=()=>{ if(state.cookies>=500){ state.cookies-=500; state.cps*=2; updateUI(); saveAll(); beep(1200,80);} };
-    document.getElementById('m5').onclick=()=>{ if(state.cookies>=2500){ state.cookies-=2500; state.cps*=5; updateUI(); saveAll(); beep(1500,80);} };
-    document.getElementById('resetSave').onclick=()=>{ localStorage.clear(); location.reload(); };
-
-    // Spawn obstacles
-    function spawnObstacle(){ const lane = Math.floor(Math.random()*road.laneCount); const type = Math.random()<0.16? 'cone':'car'; const w = type==='cone'?26:44; obstacles.push({ x: road.x - road.width/2 + lane*laneWidth + laneWidth/2, y: -120, w, h: type==='cone'?30:64, speed: 220 + Math.random()*280, type, color: type==='cone'? '#ff6b6b' : (Math.random()<0.5? '#6ee7b7':'#60a5fa') }); }
-
-    // Update
-    function update(dt){
-      const left = keys['arrowleft']||keys['a']||keys['ml']; const right = keys['arrowright']||keys['d']||keys['mr']; const up = keys['arrowup']||keys['w']||keys['ma']; const down = keys['arrowdown']||keys['s']||keys['mb']; const nit = keys[' ']||keys['mn'];
-
-      if(up) state.speed += state.accel*dt; if(down) state.speed -= state.brake*dt; if(!up && !down) state.speed *= Math.pow(state.drag, dt*60);
-      if(nit && state.nitro>0){ state.speed += 1600*dt; }
-      state.speed = clamp(state.speed, -120, state.maxSpeed + state.upgradeLevel*50);
-
-      const turnRate = 3.0 * (0.4 + (state.speed/state.maxSpeed)); if(left) state.angle -= turnRate*dt; if(right) state.angle += turnRate*dt; state.x += Math.sin(state.angle)*state.speed*dt*0.5; state.x = clamp(state.x, road.x - road.width/2 + player.w/2, road.x + road.width/2 - player.w/2);
-
-      const distStep = state.speed*dt*0.12; state.distance += Math.max(0, Math.round(distStep)); state.score += Math.max(0, Math.round(distStep*0.3));
-
-      // spawn obstacles rhythm
-      spawnTimer += dt; const spawnInterval = 0.8 - Math.min(0.5, state.distance/10000); if(spawnTimer>spawnInterval){ spawnTimer=0; spawnObstacle(); }
-
-      // update obstacles
-      for(let i=obstacles.length-1;i>=0;i--){ const ob = obstacles[i]; ob.y += (ob.speed + state.speed*0.2)*dt; const dx = Math.abs(ob.x-state.x); const dy = Math.abs(ob.y-state.y); if(dx < (ob.w+player.w)/2 && dy < (ob.h+player.h)/2){ obstacles.splice(i,1); state.lives--; state.score = Math.max(0, state.score-80); beep(200,120); if(state.lives<=0) gameOver(); } else if(ob.y > H+120){ obstacles.splice(i,1); state.score += 8; } }
-
-      // integrate clicker auto production
-      // (production handled in separate interval)
-
-      // slight dampening of angle
-      state.angle *= 0.996;
-      updateUI();
-    }
-
-    function gameOver(){ running=false; if(state.score>state.best){ state.best = state.score; localStorage.setItem('rally_best', state.best);} saveAll(); setTimeout(()=>{ alert('Juego terminado! Puntuación: '+state.score+'\nPulsa Iniciar para reiniciar.'); }, 200); }
-
-    function updateUI(){ s_speed.textContent = Math.round(state.speed); s_dist.textContent = state.distance; s_score.textContent = state.score; s_lives.textContent = state.lives; s_cookies.textContent = state.cookies; s_cps.textContent = state.cps; s_best.textContent = state.best; }
-
-    // Render
-    function drawRoad(){ ctx.fillStyle = tracks[state.track].color; ctx.fillRect((W-road.width)/2,0,road.width,H); ctx.fillStyle='#022'; ctx.fillRect(0,0,(W-road.width)/2,H); ctx.fillRect((W-road.width)/2+road.width,0,(W-road.width)/2,H); ctx.strokeStyle='#94a3b8'; ctx.lineWidth=3; for(let i=1;i<road.laneCount;i++){ const lx=(W-road.width)/2+i*laneWidth; ctx.setLineDash([20,18]); ctx.beginPath(); ctx.moveTo(lx,0); ctx.lineTo(lx,H); ctx.stroke(); } ctx.setLineDash([]); ctx.strokeStyle='#000'; ctx.lineWidth=8; ctx.strokeRect((W-road.width)/2,0,road.width,H); }
-
-    function drawPlayer(){ ctx.save(); ctx.translate(state.x, state.y); ctx.rotate(state.angle); ctx.fillStyle='rgba(0,0,0,0.22)'; ctx.fillRect(-player.w/2, player.h/2 + 8, player.w, 8); ctx.fillStyle=player.color; roundRect(-player.w/2, -player.h/2, player.w, player.h, 8, true, false); ctx.fillStyle='rgba(255,255,255,0.8)'; roundRect(-player.w/2+8, -player.h/2+8, player.w-16, player.h/3, 4, true, false); ctx.restore(); }
-
-    function drawObstacles(){ obstacles.forEach(ob=>{ ctx.save(); ctx.translate(ob.x, ob.y); ctx.fillStyle = ob.color; if(ob.type==='car'){ roundRect(-ob.w/2, -ob.h/2, ob.w, ob.h, 6, true, false); ctx.fillStyle='rgba(0,0,0,0.12)'; ctx.fillRect(-ob.w/4, -ob.h/4, ob.w/2, ob.h/6); } else { ctx.beginPath(); ctx.moveTo(0,-ob.h/2); ctx.lineTo(ob.w/2, ob.h/2); ctx.lineTo(-ob.w/2, ob.h/2); ctx.closePath(); ctx.fill(); } ctx.restore(); }); }
-
-    function drawHUD(){ ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.fillRect(12,12,260,100); ctx.fillStyle='#fff'; ctx.font='14px Arial'; ctx.fillText('Vel: '+Math.round(state.speed)+' km/h',22,36); ctx.fillText('Dist: '+state.distance+' m',22,56); ctx.fillText('Punt: '+state.score,22,76); ctx.fillText('Nitro: '+state.nitro,22,96); }
-
-    function render(){ ctx.clearRect(0,0,W,H); drawRoad(); const speedFactor = state.speed / (state.maxSpeed||900); for(let i=0;i<24;i++){ const y=(i*96 + (Date.now()*0.08*speedFactor)%96); ctx.fillStyle='rgba(255,255,255,'+(0.02 + 0.08*(i%2))+')'; ctx.fillRect(W/2-2, y, 4, 34); } drawObstacles(); drawPlayer(); drawHUD(); }
-
-    function loop(ts){ if(!running) return; if(paused){ requestAnimationFrame(loop); return; } const dt = Math.min(1/30,(ts-lastTs)/1000); lastTs=ts; update(dt); render(); requestAnimationFrame(loop); }
-
-    function startGame(){ resetGame(); running=true; paused=false; lastTs=performance.now(); requestAnimationFrame(loop); }
-    function resetGame(){ state.speed=0; state.x=W/2; state.angle=0; state.lives=3; state.score=0; state.distance=0; obstacles=[]; spawnTimer=0; render(); updateUI(); }
-    function togglePause(){ if(!running) return; paused=!paused; pauseBtn.textContent = paused? 'Reanudar':'Pausa'; if(!paused) lastTs=performance.now(); }
-
-    // Utility rounded rect
-    function roundRect(x,y,w,h,r,fill,stroke){ if(typeof r==='undefined') r=6; if(typeof r==='number') r={tl:r,tr:r,br:r,bl:r}; ctx.beginPath(); ctx.moveTo(x+r.tl,y); ctx.lineTo(x+w-r.tr,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr); ctx.lineTo(x+w,y+h-r.br); ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h); ctx.lineTo(x+r.bl,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl); ctx.lineTo(x,y+r.tl); ctx.quadraticCurveTo(x,y,x+r.tl,y); ctx.closePath(); if(fill) ctx.fill(); if(stroke) ctx.stroke(); }
-
-    // Clicker main button
-    const clickCard = document.createElement('div'); clickCard.className='card'; clickCard.style.marginTop='8px'; clickCard.innerHTML = `<div class='title'>Generador ⚡</div><div class='row'><button id='genBtn' class='primary'>Generar +1 ⚡</button><button id='spUp'>Mejora Vel (+30 ⚡)</button></div><div class='small'>Genera potencia para comprar</div>`; document.getElementById('side').appendChild(clickCard);
-    document.getElementById('genBtn').onclick = ()=>{ state.cookies++; updateUI(); saveAll(); beep(800,60); };
-    document.getElementById('spUp').onclick = ()=>{ if(state.cookies>=30){ state.cookies-=30; state.upgradeLevel++; state.maxSpeed += 50; updateUI(); saveAll(); beep(980,80); } };
-
-    // Automatic production interval
-    setInterval(()=>{ state.cookies += state.cps; state.maxSpeed += state.cps*0.15; updateUI(); saveAll(); },1000);
-
-    // periodic save
-    setInterval(()=>{ saveAll(); },5000);
-
-    // initial render
-    resetGame(); render();
-
-    // responsive canvas sizing
-    function fit(){ const maxW = Math.min(window.innerWidth-420, 1200); const newW = Math.max(760, maxW); const ratio = canvas.width / canvas.height; canvas.style.width = newW + 'px'; canvas.style.height = Math.round(newW/ratio) + 'px'; }
-    window.addEventListener('resize', fit); fit();
-
-    // show initial UI values
-    updateUI();
-  </script>
+// Iniciar juego
+startBtn.onclick=()=>{ running=true; state.speed=0; state.distance=0; state.score=0; obstacles=[]; lastTs=performance.now(); loop(lastTs); };
+pauseBtn.onclick=()=>{ paused=!paused; };
+</script>
 </body>
 </html>
