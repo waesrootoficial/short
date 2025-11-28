@@ -42,7 +42,7 @@ body {
     font-size: 1.1em;
 }
 #clicker {
-    width: 220px;
+    width: 250px;
     height: auto;
     cursor: pointer;
     transition: transform 0.1s;
@@ -97,6 +97,7 @@ body {
             <p>⚡ Por clic: $<span id="moneyPerClick">1</span></p>
             <p>🕒 Por segundo: $<span id="autoMoney">0</span></p>
         </div>
+        <!-- Imagen central del coche -->
         <img src="h.jpeg" id="clicker" alt="Coche">
     </div>
 
@@ -104,15 +105,15 @@ body {
         <h2>Tienda de Coches</h2>
         <div class="shop-item">
             <p>🚙 Mini Coche (+1 $/clic) — <span id="price1">50</span>$</p>
-            <button onclick="buyCar(1,1,0)">Comprar</button>
+            <button onclick="buyCar(0,1,0)">Comprar</button>
         </div>
         <div class="shop-item">
             <p>🚐 SUV (+5 $/clic, +1 $/seg) — <span id="price2">250</span>$</p>
-            <button onclick="buyCar(2,5,1)">Comprar</button>
+            <button onclick="buyCar(1,5,1)">Comprar</button>
         </div>
         <div class="shop-item">
             <p>🏎️ Supercar (+20 $/clic, +5 $/seg) — <span id="price3">1000</span>$</p>
-            <button onclick="buyCar(3,20,5)">Comprar</button>
+            <button onclick="buyCar(2,20,5)">Comprar</button>
         </div>
     </div>
 </div>
@@ -123,8 +124,8 @@ let cars = parseInt(localStorage.getItem('cars')) || 0;
 let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick')) || 1;
 let autoMoney = parseInt(localStorage.getItem('autoMoney')) || 0;
 
-let prices = [50,250,1000];
-let owned = [0,0,0];
+let prices = localStorage.getItem('prices') ? JSON.parse(localStorage.getItem('prices')) : [50,250,1000];
+let owned = localStorage.getItem('owned') ? JSON.parse(localStorage.getItem('owned')) : [0,0,0];
 
 const moneyEl = document.getElementById('money');
 const carsEl = document.getElementById('cars');
@@ -151,15 +152,14 @@ clicker.addEventListener('click', ()=>{
     save();
 });
 
-function buyCar(index,clickBonus,autoBonus){
-    if(money>=prices[index-1]){
-        money -= prices[index-1];
+function buyCar(index, clickBonus, autoBonus){
+    if(money>=prices[index]){
+        money -= prices[index];
         cars += 1;
         moneyPerClick += clickBonus;
         autoMoney += autoBonus;
-        owned[index-1] +=1;
-        // Incrementa precio 15% por cada compra
-        prices[index-1] = Math.floor(prices[index-1]*1.15);
+        owned[index] += 1;
+        prices[index] = Math.floor(prices[index]*1.15); // Subida de precio progresiva
         update();
         save();
     } else {
@@ -170,20 +170,12 @@ function buyCar(index,clickBonus,autoBonus){
 setInterval(()=>{ money+=autoMoney; update(); save(); },1000);
 
 function save(){
-    localStorage.setItem('money',money);
-    localStorage.setItem('cars',cars);
-    localStorage.setItem('moneyPerClick',moneyPerClick);
-    localStorage.setItem('autoMoney',autoMoney);
-    localStorage.setItem('prices',JSON.stringify(prices));
-    localStorage.setItem('owned',JSON.stringify(owned));
-}
-
-// Cargar precios guardados
-if(localStorage.getItem('prices')){
-    prices = JSON.parse(localStorage.getItem('prices'));
-}
-if(localStorage.getItem('owned')){
-    owned = JSON.parse(localStorage.getItem('owned'));
+    localStorage.setItem('money', money);
+    localStorage.setItem('cars', cars);
+    localStorage.setItem('moneyPerClick', moneyPerClick);
+    localStorage.setItem('autoMoney', autoMoney);
+    localStorage.setItem('prices', JSON.stringify(prices));
+    localStorage.setItem('owned', JSON.stringify(owned));
 }
 
 update();
