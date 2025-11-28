@@ -18,7 +18,7 @@ body {
 .container {
     display: flex;
     width: 100%;
-    max-width: 1000px;
+    max-width: 1200px;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -42,18 +42,20 @@ body {
     position: relative;
 }
 #shop {
-    width: 300px;
+    width: 350px;
     margin-left: 30px;
     background: rgba(0,0,0,0.6);
     border-radius: 10px;
     padding: 15px;
     box-sizing: border-box;
     height: fit-content;
+    overflow-y: auto;
+    max-height: 80vh;
 }
 #shop h2 {
     text-align: center;
     margin-top: 0;
-    font-size: 1.8em;
+    font-size: 2em;
 }
 .shop-item {
     background: rgba(255,255,255,0.1);
@@ -105,7 +107,8 @@ body {
     </div>
 
     <div id="shop">
-        <h2>Mejoras</h2>
+        <h2>Mejoras y Objetos</h2>
+
         <div class="shop-item">
             <p>🚀 Turbo Boost</p>
             <button onclick="buyUpgrade('turbo')">Mejorar</button>
@@ -118,6 +121,26 @@ body {
             <p>⚡ Motor Pro</p>
             <button onclick="buyUpgrade('motor')">Mejorar</button>
         </div>
+        <div class="shop-item">
+            <p>🏁 Llantas Rápidas</p>
+            <button onclick="buyUpgrade('llantas')">Mejorar</button>
+        </div>
+        <div class="shop-item">
+            <p>🛠️ Suspensión Mejorada</p>
+            <button onclick="buyUpgrade('suspension')">Mejorar</button>
+        </div>
+        <div class="shop-item">
+            <p>🔥 Escape Deportivo</p>
+            <button onclick="buyUpgrade('escape')">Mejorar</button>
+        </div>
+        <div class="shop-item">
+            <p>🎨 Pintura Especial</p>
+            <button onclick="buyUpgrade('pintura')">Mejorar</button>
+        </div>
+        <div class="shop-item">
+            <p>💨 Aerodinámica Avanzada</p>
+            <button onclick="buyUpgrade('aero')">Mejorar</button>
+        </div>
     </div>
 </div>
 
@@ -125,7 +148,12 @@ body {
 let upgrades = {
     turbo: 0,
     nitro: 0,
-    motor: 0
+    motor: 0,
+    llantas: 0,
+    suspension: 0,
+    escape: 0,
+    pintura: 0,
+    aero: 0
 };
 
 const clicker = document.getElementById('clicker');
@@ -136,7 +164,7 @@ function createParticle(x,y){
     p.classList.add('particle');
     const angle = Math.random()*2*Math.PI;
     const distance = 50 + Math.random()*30;
-    const colors = ['cyan','magenta','yellow','orange','white'];
+    const colors = ['cyan','magenta','yellow','orange','white','lime','pink'];
     p.style.background = colors[Math.floor(Math.random()*colors.length)];
     p.style.left = x+'px';
     p.style.top = y+'px';
@@ -149,7 +177,7 @@ function createParticle(x,y){
 clicker.addEventListener('click', ()=>{
     // Animación coche
     clicker.style.transform = 'scale(1.2)';
-    clicker.style.boxShadow = '0 0 25px cyan';
+    clicker.style.boxShadow = '0 0 30px cyan, 0 0 15px magenta';
     setTimeout(()=>{clicker.style.transform='scale(1)'; clicker.style.boxShadow='none';},100);
 
     // Coordenadas del click
@@ -159,7 +187,7 @@ clicker.addEventListener('click', ()=>{
     const y = rect.top - mainRect.top + rect.height/2 - 5;
 
     // Crear partículas mejoradas
-    for(let i=0;i<15;i++) createParticle(x,y);
+    for(let i=0;i<20;i++) createParticle(x,y);
 });
 
 function buyUpgrade(name){
