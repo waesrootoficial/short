@@ -3,40 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Car Clicker Modern v2.1</title>
+<title>Car Clicker Ultra v3.0</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to bottom, #1f1c2c, #928dab);
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    color: #fff;
-}
-.container { display: flex; max-width: 1200px; width: 100%; padding: 20px; }
-#main { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
-#title { font-size: 3em; text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff; margin-bottom: 10px; }
-#version { font-size: 1em; color: #ccc; margin-bottom: 20px; }
-.stats { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 20px; }
-.stats p { background: rgba(0,0,0,0.5); padding: 15px 20px; border-radius: 15px; font-size: 1.3em; text-align: center; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-#clicker { width: 300px; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; border-radius: 20px; }
-#shop { width: 350px; margin-left: 30px; background: rgba(0,0,0,0.6); border-radius: 20px; padding: 20px; overflow-y: auto; max-height: 80vh; }
-#shop h2 { text-align: center; font-size: 2em; margin-bottom: 20px; }
-.shop-item { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; margin-bottom: 15px; transition: transform 0.15s ease, background 0.15s ease; display:flex; justify-content: space-between; align-items: center; }
-.shop-item:hover { transform: scale(1.03); background: rgba(255,255,255,0.15); }
-.shop-item p { font-size: 1.2em; }
-.shop-item button { padding: 10px 15px; font-size: 1.1em; border: none; border-radius: 12px; background: linear-gradient(90deg,#ff6a00,#ee0979); color: #fff; cursor: pointer; transition: transform 0.1s, background 0.15s; }
-.shop-item button:hover { transform: scale(1.05); background: linear-gradient(90deg,#ff9a00,#ff00ff); }
-.particle { position: absolute; width: 12px; height: 12px; border-radius: 50%; pointer-events: none; animation: particleAnim 800ms ease-out forwards; opacity: 0.9; }
-@keyframes particleAnim { 0% {opacity:1; transform: translate(0,0) scale(1);} 100% {opacity:0; transform: translate(var(--x), var(--y)) scale(0);} }
+/* Reset */
+* {margin:0; padding:0; box-sizing:border-box;}
+body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:linear-gradient(to bottom,#0f2027,#203a43,#2c5364); color:#fff; display:flex; justify-content:center; min-height:100vh;}
+
+/* Container principal */
+.container { display:flex; max-width:1400px; width:100%; padding:20px; gap:20px; }
+
+/* Panel principal */
+#main { flex:1; display:flex; flex-direction:column; align-items:center; position:relative; }
+
+/* Título y versión */
+#title { font-size:3em; text-shadow:0 0 15px #00ffff,0 0 25px #ff00ff; margin-bottom:5px; }
+#version { font-size:1em; color:#ccc; margin-bottom:15px; }
+
+/* Estadísticas modernas con animación */
+.stats { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-bottom:20px; }
+.stats p { background:rgba(0,0,0,0.6); padding:15px 20px; border-radius:20px; font-size:1.4em; text-align:center; box-shadow:0 0 15px rgba(0,0,0,0.5); transition: transform 0.2s; }
+.stats p:hover { transform: scale(1.05); }
+
+/* Coche clicable con sombra dinámica */
+#clicker { width:300px; cursor:pointer; border-radius:25px; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+
+/* Tienda moderna con scroll */
+#shop { width:400px; background:rgba(0,0,0,0.7); border-radius:25px; padding:20px; max-height:80vh; overflow-y:auto; }
+#shop h2 { text-align:center; font-size:2em; margin-bottom:20px; }
+.shop-item { background:rgba(255,255,255,0.1); padding:15px; border-radius:20px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; transition: transform 0.15s, background 0.15s; }
+.shop-item:hover { transform: scale(1.04); background:rgba(255,255,255,0.15); }
+.shop-item p { font-size:1.2em; flex:1; }
+.shop-item button { padding:12px 18px; font-size:1.2em; border:none; border-radius:15px; background:linear-gradient(90deg,#ff6a00,#ee0979); color:#fff; cursor:pointer; transition: transform 0.1s, background 0.15s; }
+.shop-item button:hover { transform: scale(1.05); background:linear-gradient(90deg,#ff9a00,#ff00ff); }
+.shop-item .count { margin-left:10px; font-size:1.2em; color:#00ffff; }
+
+/* Partículas avanzadas */
+.particle { position:absolute; width:12px; height:12px; border-radius:50%; pointer-events:none; animation:particleAnim 800ms ease-out forwards; opacity:0.9; }
+@keyframes particleAnim { 0% {opacity:1; transform:translate(0,0) scale(1);} 100% {opacity:0; transform:translate(var(--x),var(--y)) scale(0);} }
 </style>
 </head>
 <body>
 <div class="container">
     <div id="main">
-        <div id="title">CAR CLICKER MODERN</div>
-        <div id="version">v2.1</div>
+        <div id="title">CAR CLICKER ULTRA</div>
+        <div id="version">v3.0</div>
         <div class="stats">
             <p>💰 Dinero: $<span id="money">0</span></p>
             <p>⚡ Por clic: $<span id="moneyPerClick">1</span></p>
@@ -48,136 +58,101 @@ body {
 
     <div id="shop">
         <h2>Tienda y Mejoras</h2>
-
-        <div class="shop-item">
-            <p>🚀 Turbo Boost (+1 $/clic)</p>
-            <div>
-                <button onclick="buyUpgrade('turbo',1,0,50)">Comprar</button>
-                <span id="count-turbo">0</span>
-            </div>
-        </div>
-        <div class="shop-item">
-            <p>💎 Nitro (+5 $/clic, +1 $/seg)</p>
-            <div>
-                <button onclick="buyUpgrade('nitro',5,1,250)">Comprar</button>
-                <span id="count-nitro">0</span>
-            </div>
-        </div>
-        <div class="shop-item">
-            <p>⚡ Motor Pro (+20 $/clic, +5 $/seg)</p>
-            <div>
-                <button onclick="buyUpgrade('motor',20,5,1000)">Comprar</button>
-                <span id="count-motor">0</span>
-            </div>
-        </div>
-        <div class="shop-item">
-            <p>🏁 Llantas Rápidas (+2 $/clic)</p>
-            <div>
-                <button onclick="buyUpgrade('llantas',2,0,150)">Comprar</button>
-                <span id="count-llantas">0</span>
-            </div>
-        </div>
-        <div class="shop-item">
-            <p>🛠️ Suspensión Mejorada (+0 $/clic, +2 $/seg)</p>
-            <div>
-                <button onclick="buyUpgrade('suspension',0,2,200)">Comprar</button>
-                <span id="count-suspension">0</span>
-            </div>
-        </div>
-        <div class="shop-item">
-            <p>🔥 Escape Deportivo (+3 $/clic, +1 $/seg)</p>
-            <div>
-                <button onclick="buyUpgrade('escape',3,1,300)">Comprar</button>
-                <span id="count-escape">0</span>
-            </div>
-        </div>
-        <div class="shop-item">
-            <p>🎨 Pintura Especial (+1 $/clic)</p>
-            <div>
-                <button onclick="buyUpgrade('pintura',1,0,100)">Comprar</button>
-                <span id="count-pintura">0</span>
-            </div>
-        </div>
-        <div class="shop-item">
-            <p>💨 Aerodinámica Avanzada (+0 $/clic, +3 $/seg)</p>
-            <div>
-                <button onclick="buyUpgrade('aero',0,3,400)">Comprar</button>
-                <span id="count-aero">0</span>
-            </div>
-        </div>
+        <!-- Mejoras con contador dinámico -->
+        <div class="shop-item"><p>🚀 Turbo Boost (+1 $/clic)</p><div><button onclick="buyUpgrade('turbo',1,0,50)">Comprar</button><span class="count" id="count-turbo">0</span></div></div>
+        <div class="shop-item"><p>💎 Nitro (+5 $/clic, +1 $/seg)</p><div><button onclick="buyUpgrade('nitro',5,1,250)">Comprar</button><span class="count" id="count-nitro">0</span></div></div>
+        <div class="shop-item"><p>⚡ Motor Pro (+20 $/clic, +5 $/seg)</p><div><button onclick="buyUpgrade('motor',20,5,1000)">Comprar</button><span class="count" id="count-motor">0</span></div></div>
+        <div class="shop-item"><p>🏁 Llantas Rápidas (+2 $/clic)</p><div><button onclick="buyUpgrade('llantas',2,0,150)">Comprar</button><span class="count" id="count-llantas">0</span></div></div>
+        <div class="shop-item"><p>🛠️ Suspensión Mejorada (+0 $/clic, +2 $/seg)</p><div><button onclick="buyUpgrade('suspension',0,2,200)">Comprar</button><span class="count" id="count-suspension">0</span></div></div>
+        <div class="shop-item"><p>🔥 Escape Deportivo (+3 $/clic, +1 $/seg)</p><div><button onclick="buyUpgrade('escape',3,1,300)">Comprar</button><span class="count" id="count-escape">0</span></div></div>
+        <div class="shop-item"><p>🎨 Pintura Especial (+1 $/clic)</p><div><button onclick="buyUpgrade('pintura',1,0,100)">Comprar</button><span class="count" id="count-pintura">0</span></div></div>
+        <div class="shop-item"><p>💨 Aerodinámica Avanzada (+0 $/clic, +3 $/seg)</p><div><button onclick="buyUpgrade('aero',0,3,400)">Comprar</button><span class="count" id="count-aero">0</span></div></div>
     </div>
 </div>
 
 <script>
-let money = parseInt(localStorage.getItem('money')) || 0;
-let cars = parseInt(localStorage.getItem('cars')) || 0;
-let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick')) || 1;
-let autoMoney = parseInt(localStorage.getItem('autoMoney')) || 0;
+let money = parseInt(localStorage.getItem('money'))||0;
+let cars = parseInt(localStorage.getItem('cars'))||0;
+let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick'))||1;
+let autoMoney = parseInt(localStorage.getItem('autoMoney'))||0;
+let upgrades = JSON.parse(localStorage.getItem('upgrades')) || {turbo:0,nitro:0,motor:0,llantas:0,suspension:0,escape:0,pintura:0,aero:0};
 
-const clicker = document.getElementById('clicker');
-const main = document.getElementById('main');
-const moneyEl = document.getElementById('money');
-const moneyPerClickEl = document.getElementById('moneyPerClick');
-const autoMoneyEl = document.getElementById('autoMoney');
-const carsEl = document.getElementById('cars');
-
-let upgrades = JSON.parse(localStorage.getItem('upgrades')) || {
-    turbo:0, nitro:0, motor:0, llantas:0,
-    suspension:0, escape:0, pintura:0, aero:0
-};
+const clicker=document.getElementById('clicker');
+const main=document.getElementById('main');
+const moneyEl=document.getElementById('money');
+const moneyPerClickEl=document.getElementById('moneyPerClick');
+const autoMoneyEl=document.getElementById('autoMoney');
+const carsEl=document.getElementById('cars');
 
 function updateStats(){
-    moneyEl.textContent = money;
-    moneyPerClickEl.textContent = moneyPerClick;
-    autoMoneyEl.textContent = autoMoney;
-    carsEl.textContent = cars;
-
-    // Actualizar contadores de la tienda
+    moneyEl.textContent=money;
+    moneyPerClickEl.textContent=moneyPerClick;
+    autoMoneyEl.textContent=autoMoney;
+    carsEl.textContent=cars;
     for(let key in upgrades){
-        let span = document.getElementById('count-'+key);
-        if(span) span.textContent = upgrades[key];
+        let span=document.getElementById('count-'+key);
+        if(span) span.textContent=upgrades[key];
+    }
+    updateCarVisual();
+}
+
+// Cambiar visual del coche según mejoras
+function updateCarVisual(){
+    if(upgrades.motor>=5){
+        clicker.style.filter='hue-rotate(180deg) saturate(150%)';
+    } else if(upgrades.turbo>=5){
+        clicker.style.filter='hue-rotate(90deg) saturate(120%)';
+    } else {
+        clicker.style.filter='none';
     }
 }
 
-function createParticle(x,y){
-    const p = document.createElement('div');
+function createParticle(x,y,type='default'){
+    const p=document.createElement('div');
     p.classList.add('particle');
-    const angle = Math.random()*2*Math.PI;
-    const distance = 50 + Math.random()*30;
-    const colors = ['#00ffff','#ff00ff','#ffff00','#ff4500','#00ff00','#ff69b4'];
-    p.style.background = colors[Math.floor(Math.random()*colors.length)];
-    p.style.left = x+'px';
-    p.style.top = y+'px';
-    p.style.setProperty('--x', Math.cos(angle)*distance+'px');
-    p.style.setProperty('--y', Math.sin(angle)*distance+'px');
+    const angle=Math.random()*2*Math.PI;
+    const distance=50+Math.random()*30;
+    const colors={
+        default:['#00ffff','#ff00ff','#ffff00','#ff4500','#00ff00','#ff69b4'],
+        fire:['#ff4500','#ff6347','#ff0000','#ff8c00'],
+        smoke:['#888','#bbb','#555']
+    };
+    let colorArr = colors[type]||colors.default;
+    p.style.background=colorArr[Math.floor(Math.random()*colorArr.length)];
+    p.style.left=x+'px';
+    p.style.top=y+'px';
+    p.style.setProperty('--x',Math.cos(angle)*distance+'px');
+    p.style.setProperty('--y',Math.sin(angle)*distance+'px');
     main.appendChild(p);
     setTimeout(()=>p.remove(),800);
 }
 
+// Click en coche
 clicker.addEventListener('click', ()=>{
-    money += moneyPerClick;
-    cars += 1;
-
-    clicker.style.transform = 'scale(1.2)';
-    clicker.style.boxShadow = '0 0 30px #00ffff,0 0 15px #ff00ff';
+    money+=moneyPerClick;
+    cars+=1;
+    clicker.style.transform='scale(1.2)';
+    clicker.style.boxShadow='0 0 30px #00ffff,0 0 15px #ff00ff';
     setTimeout(()=>{clicker.style.transform='scale(1)'; clicker.style.boxShadow='none';},100);
+    const rect=clicker.getBoundingClientRect();
+    const mainRect=main.getBoundingClientRect();
+    const x=rect.left-mainRect.left+rect.width/2-6;
+    const y=rect.top-mainRect.top+rect.height/2-6;
 
-    const rect = clicker.getBoundingClientRect();
-    const mainRect = main.getBoundingClientRect();
-    const x = rect.left - mainRect.left + rect.width/2 - 6;
-    const y = rect.top - mainRect.top + rect.height/2 - 6;
-
-    for(let i=0;i<25;i++) createParticle(x,y);
-
+    // Partículas avanzadas según mejoras
+    let type='default';
+    if(upgrades.nitro>=3) type='fire';
+    if(upgrades.suspension>=3) type='smoke';
+    for(let i=0;i<25;i++) createParticle(x,y,type);
     updateStats();
     save();
 });
 
-function buyUpgrade(name, clickBonus, autoBonus, price){
-    if(money >= price){
-        money -= price;
-        moneyPerClick += clickBonus;
-        autoMoney += autoBonus;
+function buyUpgrade(name,clickBonus,autoBonus,price){
+    if(money>=price){
+        money-=price;
+        moneyPerClick+=clickBonus;
+        autoMoney+=autoBonus;
         upgrades[name]++;
         updateStats();
         save();
@@ -186,7 +161,7 @@ function buyUpgrade(name, clickBonus, autoBonus, price){
 
 // Auto-money
 setInterval(()=>{
-    money += autoMoney;
+    money+=autoMoney;
     updateStats();
     save();
 },1000);
