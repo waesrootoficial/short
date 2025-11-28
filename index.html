@@ -3,11 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Car Clicker Ultra v3.0</title>
+<title>Car Clicker Ultra Modern v3.1</title>
 <style>
-/* Reset */
-* {margin:0; padding:0; box-sizing:border-box;}
-body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:linear-gradient(to bottom,#0f2027,#203a43,#2c5364); color:#fff; display:flex; justify-content:center; min-height:100vh;}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background:linear-gradient(to bottom,#0f2027,#203a43,#2c5364);
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    min-height:100vh;
+}
 
 /* Container principal */
 .container { display:flex; max-width:1400px; width:100%; padding:20px; gap:20px; }
@@ -15,19 +21,36 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:li
 /* Panel principal */
 #main { flex:1; display:flex; flex-direction:column; align-items:center; position:relative; }
 
-/* Título y versión */
-#title { font-size:3em; text-shadow:0 0 15px #00ffff,0 0 25px #ff00ff; margin-bottom:5px; }
+/* Título moderno animado */
+#title {
+    font-size:3em;
+    font-weight:bold;
+    background: linear-gradient(90deg, #00ffff, #ff00ff, #ffff00, #ff4500, #00ff00);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientAnim 4s ease infinite;
+    margin-bottom:5px;
+    text-align:center;
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
+}
+@keyframes gradientAnim {
+    0% {background-position:0% 50%;}
+    50% {background-position:100% 50%;}
+    100% {background-position:0% 50%;}
+}
+
 #version { font-size:1em; color:#ccc; margin-bottom:15px; }
 
-/* Estadísticas modernas con animación */
+/* Estadísticas modernas */
 .stats { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-bottom:20px; }
 .stats p { background:rgba(0,0,0,0.6); padding:15px 20px; border-radius:20px; font-size:1.4em; text-align:center; box-shadow:0 0 15px rgba(0,0,0,0.5); transition: transform 0.2s; }
 .stats p:hover { transform: scale(1.05); }
 
-/* Coche clicable con sombra dinámica */
+/* Coche clicable */
 #clicker { width:300px; cursor:pointer; border-radius:25px; transition: transform 0.15s ease, box-shadow 0.15s ease; }
 
-/* Tienda moderna con scroll */
+/* Tienda moderna */
 #shop { width:400px; background:rgba(0,0,0,0.7); border-radius:25px; padding:20px; max-height:80vh; overflow-y:auto; }
 #shop h2 { text-align:center; font-size:2em; margin-bottom:20px; }
 .shop-item { background:rgba(255,255,255,0.1); padding:15px; border-radius:20px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; transition: transform 0.15s, background 0.15s; }
@@ -40,13 +63,14 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:li
 /* Partículas avanzadas */
 .particle { position:absolute; width:12px; height:12px; border-radius:50%; pointer-events:none; animation:particleAnim 800ms ease-out forwards; opacity:0.9; }
 @keyframes particleAnim { 0% {opacity:1; transform:translate(0,0) scale(1);} 100% {opacity:0; transform:translate(var(--x),var(--y)) scale(0);} }
+
 </style>
 </head>
 <body>
 <div class="container">
     <div id="main">
-        <div id="title">CAR CLICKER ULTRA</div>
-        <div id="version">v3.0</div>
+        <div id="title">CAR CLICKER ULTRA MODERN</div>
+        <div id="version">v3.1</div>
         <div class="stats">
             <p>💰 Dinero: $<span id="money">0</span></p>
             <p>⚡ Por clic: $<span id="moneyPerClick">1</span></p>
@@ -58,7 +82,6 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:li
 
     <div id="shop">
         <h2>Tienda y Mejoras</h2>
-        <!-- Mejoras con contador dinámico -->
         <div class="shop-item"><p>🚀 Turbo Boost (+1 $/clic)</p><div><button onclick="buyUpgrade('turbo',1,0,50)">Comprar</button><span class="count" id="count-turbo">0</span></div></div>
         <div class="shop-item"><p>💎 Nitro (+5 $/clic, +1 $/seg)</p><div><button onclick="buyUpgrade('nitro',5,1,250)">Comprar</button><span class="count" id="count-nitro">0</span></div></div>
         <div class="shop-item"><p>⚡ Motor Pro (+20 $/clic, +5 $/seg)</p><div><button onclick="buyUpgrade('motor',20,5,1000)">Comprar</button><span class="count" id="count-motor">0</span></div></div>
@@ -96,7 +119,6 @@ function updateStats(){
     updateCarVisual();
 }
 
-// Cambiar visual del coche según mejoras
 function updateCarVisual(){
     if(upgrades.motor>=5){
         clicker.style.filter='hue-rotate(180deg) saturate(150%)';
@@ -112,12 +134,8 @@ function createParticle(x,y,type='default'){
     p.classList.add('particle');
     const angle=Math.random()*2*Math.PI;
     const distance=50+Math.random()*30;
-    const colors={
-        default:['#00ffff','#ff00ff','#ffff00','#ff4500','#00ff00','#ff69b4'],
-        fire:['#ff4500','#ff6347','#ff0000','#ff8c00'],
-        smoke:['#888','#bbb','#555']
-    };
-    let colorArr = colors[type]||colors.default;
+    const colors={'default':['#00ffff','#ff00ff','#ffff00','#ff4500','#00ff00','#ff69b4'],'fire':['#ff4500','#ff6347','#ff0000','#ff8c00'],'smoke':['#888','#bbb','#555']};
+    let colorArr=colors[type]||colors.default;
     p.style.background=colorArr[Math.floor(Math.random()*colorArr.length)];
     p.style.left=x+'px';
     p.style.top=y+'px';
@@ -127,7 +145,6 @@ function createParticle(x,y,type='default'){
     setTimeout(()=>p.remove(),800);
 }
 
-// Click en coche
 clicker.addEventListener('click', ()=>{
     money+=moneyPerClick;
     cars+=1;
@@ -139,7 +156,6 @@ clicker.addEventListener('click', ()=>{
     const x=rect.left-mainRect.left+rect.width/2-6;
     const y=rect.top-mainRect.top+rect.height/2-6;
 
-    // Partículas avanzadas según mejoras
     let type='default';
     if(upgrades.nitro>=3) type='fire';
     if(upgrades.suspension>=3) type='smoke';
@@ -159,7 +175,6 @@ function buyUpgrade(name,clickBonus,autoBonus,price){
     }
 }
 
-// Auto-money
 setInterval(()=>{
     money+=autoMoney;
     updateStats();
