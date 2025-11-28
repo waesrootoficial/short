@@ -1,118 +1,371 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pocima Clicker</title>
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #222;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-#gameContainer {
-  display: flex;
-  gap: 20px;
-}
-.playerArea {
-  width: 200px;
-  height: 300px;
-  background: #333;
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-button {
-  padding: 10px 20px;
-  margin: 10px;
-  cursor: pointer;
-  font-size: 18px;
-  border-radius: 10px;
-  border: none;
-  background: #ff5722;
-  color: #fff;
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Juego de Carreras — Index</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --road:#2b2f36;
+      --lane:#3a3f45;
+      --accent:#ffcc00;
+      --hud-bg:rgba(0,0,0,0.45);
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:#fff}
+    #gameWrap{display:flex;gap:16px;align-items:flex-start;padding:16px;box-sizing:border-box}
+    canvas{background:linear-gradient(180deg,#111827 0%, #0b1220 100%);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+    #ui{width:320px;max-width:35vw}
+    .card{background:var(--hud-bg);padding:12px;border-radius:10px;margin-bottom:12px}
+    .title{font-weight:700;margin-bottom:8px}
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+    button{padding:8px 12px;border-radius:8px;border:0;background:#111827;color:#fff;cursor:pointer}
+    button.primary{background:var(--accent);color:#111;font-weight:700}
+    .small{font-size:13px;color:#d1d5db}
+    .center{display:flex;justify-content:center;align-items:center}
+    footer.small{font-size:12px;color:#9ca3af;margin-top:8px}
+    @media(max-width:880px){#gameWrap{flex-direction:column;align-items:center}#ui{width:100%}}
+  </style>
 </head>
 <body>
+  <div id="gameWrap">
+    <canvas id="game" width="900" height="600"></canvas>
 
-<div id="gameContainer">
-  <div class="playerArea" id="player1">
-    <h2>Tú</h2>
-    <button id="clickBtn">💊 Click Potion</button>
-    <button id="upgradeBtn">✨ Mejorar Pociones</button>
-    <p>Pociones: <span id="player1Score">0</span></p>
-    <p>Nivel: <span id="playerLevel">1</span></p>
+    <div id="ui">
+      <div class="card">
+        <div class="title">Juego de Carreras - Rápido y Completo</div>
+        <div class="small">Usa las flechas o A/D para girar. W/↑ para acelerar. Espacio para freno.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">Estado</div>
+        <div id="info">
+          <div>Velocidad: <span id="speed">0</span> km/h</div>
+          <div>Distancia: <span id="distance">0</span> m</div>
+          <div>Vidas: <span id="lives">3</span></div>
+          <div>Puntuación: <span id="score">0</span></div>
+          <div>Mejor: <span id="best">0</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">Controles</div>
+        <div class="controls small">
+          <div>↑ / W: Acelerar</div>
+          <div>↓ / S: Retroceder / frenar</div>
+          <div>← / A: Girar izquierda</div>
+          <div>→ / D: Girar derecha</div>
+          <div>Espacio: Freno rápido</div>
+          <div>P: Pausa</div>
+        </div>
+      </div>
+
+      <div class="card center">
+        <button id="startBtn" class="primary">Iniciar / Reiniciar</button>
+        <button id="pauseBtn" style="margin-left:6px">Pausa</button>
+      </div>
+
+      <div class="card small">
+        <div><b>Descripción rápida:</b> Juego top-down donde esquivas tráfico y recoges puntos.</div>
+        <footer class="small">Guardado automático de mejor puntuación (localStorage)</footer>
+      </div>
+    </div>
   </div>
 
-  <div class="playerArea" id="player2">
-    <h2>Oponente (simulado)</h2>
-    <p>Pociones: <span id="player2Score">0</span></p>
-    <p>Nivel: <span id="opponentLevel">1</span></p>
-  </div>
-</div>
+  <script>
+    // Canvas setup
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width; const H = canvas.height;
 
-<script>
-let playerScore = parseInt(localStorage.getItem('playerScore')) || 0;
-let playerLevel = parseInt(localStorage.getItem('playerLevel')) || 1;
-let opponentScore = 0;
-let opponentLevel = 1;
+    // UI elements
+    const speedEl = document.getElementById('speed');
+    const distanceEl = document.getElementById('distance');
+    const livesEl = document.getElementById('lives');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
 
-const player1ScoreEl = document.getElementById('player1Score');
-const playerLevelEl = document.getElementById('playerLevel');
-const player2ScoreEl = document.getElementById('player2Score');
-const opponentLevelEl = document.getElementById('opponentLevel');
-const clickBtn = document.getElementById('clickBtn');
-const upgradeBtn = document.getElementById('upgradeBtn');
+    // Game state
+    let running = false, paused = false;
+    let lastTs = 0;
 
-function updateUI() {
-  player1ScoreEl.textContent = playerScore;
-  playerLevelEl.textContent = playerLevel;
-  player2ScoreEl.textContent = opponentScore;
-  opponentLevelEl.textContent = opponentLevel;
-}
+    const state = {
+      speed: 0, // pixels per second base
+      maxSpeed: 800,
+      accel: 1200,
+      brakePower: 2400,
+      drag: 0.98,
+      x: W/2, y: H - 140,
+      angle: 0,
+      lives: 3,
+      score: 0,
+      distance: 0,
+      best: parseInt(localStorage.getItem('carrera_best')||'0',10)
+    };
 
-// Simulación de oponente automático
-setInterval(() => {
-  opponentScore += Math.floor(Math.random() * 5) + 1;
-  if(opponentScore >= opponentLevel * 50){
-    opponentScore = 0;
-    opponentLevel += 1;
-  }
-  updateUI();
-}, 2000);
+    bestEl.textContent = state.best;
 
-// Click del jugador
-clickBtn.onclick = () => {
-  playerScore += 1 * playerLevel;
-  localStorage.setItem('playerScore', playerScore);
-  updateUI();
-};
+    // Road parameters
+    const road = {x: W/2, width: 420, laneCount:3};
+    const laneWidth = road.width / road.laneCount;
 
-// Mejorar pociones
-upgradeBtn.onclick = () => {
-  if(playerScore >= playerLevel * 10){
-    playerScore -= playerLevel * 10;
-    playerLevel += 1;
-    localStorage.setItem('playerScore', playerScore);
-    localStorage.setItem('playerLevel', playerLevel);
-    updateUI();
-  } else {
-    alert("No tienes suficientes pociones para mejorar!");
-  }
-};
+    // Player car
+    const player = {
+      w: 36, h: 60,
+      color: '#ffcc00'
+    };
 
-updateUI();
-</script>
+    // Obstacles / traffic
+    let obstacles = [];
+    let spawnTimer = 0;
+    const spawnInterval = 0.9; // s
 
+    function resetGame(){
+      state.speed = 0; state.x = W/2; state.angle = 0; state.lives = 3;
+      state.score = 0; state.distance = 0; obstacles = []; spawnTimer = 0; paused=false;
+      updateUI();
+    }
+
+    function startGame(){
+      resetGame(); running = true; lastTs = performance.now(); requestAnimationFrame(loop);
+    }
+
+    // Controls
+    const keys = {};
+    window.addEventListener('keydown', e=>{ keys[e.key.toLowerCase()] = true; if(e.key==='p' || e.key==='P'){togglePause()} });
+    window.addEventListener('keyup', e=>{ keys[e.key.toLowerCase()] = false });
+
+    pauseBtn.addEventListener('click', togglePause);
+    startBtn.addEventListener('click', ()=>{ startGame(); });
+
+    function togglePause(){ if(!running) return; paused = !paused; pauseBtn.textContent = paused? 'Reanudar' : 'Pausa'; if(!paused) lastTs = performance.now(); }
+
+    // Helper: clamp
+    const clamp = (v,a,b)=> Math.max(a,Math.min(b,v));
+
+    // Spawn obstacles (other cars and cones)
+    function spawnObstacle(){
+      const lane = Math.floor(Math.random()*road.laneCount);
+      const type = Math.random()<0.18? 'cone' : 'car';
+      const w = type==='cone'? 22 : 38;
+      obstacles.push({
+        x: road.x - road.width/2 + lane*laneWidth + laneWidth/2,
+        y: -80,
+        w:w,
+        h:type==='cone'?26:56,
+        speed: 200 + Math.random()*200,
+        type:type,
+        color: type==='cone'? '#ff6b6b' : (Math.random()<0.5? '#6ee7b7':'#60a5fa')
+      });
+    }
+
+    // Physics & update
+    function update(dt){
+      // Controls
+      const left = keys['arrowleft'] || keys['a'];
+      const right = keys['arrowright'] || keys['d'];
+      const up = keys['arrowup'] || keys['w'];
+      const down = keys['arrowdown'] || keys['s'];
+      const space = keys[' '];
+
+      if(up){ state.speed += state.accel*dt; }
+      if(space || down){ state.speed -= state.brakePower*dt; }
+      if(!up && !space && !down){ state.speed *= Math.pow(state.drag, dt*60); }
+
+      state.speed = clamp(state.speed, -120, state.maxSpeed);
+
+      // turn rate dependent on speed
+      const turnRate = 3.0 * (0.4 + (state.speed/state.maxSpeed));
+      if(left) state.angle -= turnRate*dt;
+      if(right) state.angle += turnRate*dt;
+
+      // Move player horizontally
+      state.x += Math.sin(state.angle)*state.speed*dt*0.5; // tilt effect
+      state.x = clamp(state.x, road.x - road.width/2 + player.w/2, road.x + road.width/2 - player.w/2);
+
+      // distance & score
+      const distStep = state.speed*dt*0.1; // convert to meters-ish
+      state.distance += Math.max(0, Math.round(distStep));
+      state.score += Math.max(0, Math.round(distStep*0.2));
+
+      // Spawn obstacles
+      spawnTimer += dt;
+      if(spawnTimer > spawnInterval){ spawnTimer = 0; spawnObstacle(); }
+
+      // Update obstacles (they move down relative to player speed)
+      for(let i = obstacles.length-1; i>=0; i--){
+        const ob = obstacles[i];
+        ob.y += (ob.speed + (state.speed*0.2))*dt;
+        // collision
+        const dx = Math.abs(ob.x - state.x);
+        const dy = Math.abs(ob.y - state.y);
+        if(dx < (ob.w+player.w)/2 && dy < (ob.h+player.h)/2){
+          // hit
+          obstacles.splice(i,1);
+          state.lives -= 1;
+          state.score = Math.max(0, state.score - 50);
+          if(state.lives <= 0){ gameOver(); }
+        } else if(ob.y > H + 100){ // off screen
+          obstacles.splice(i,1);
+          // reward for dodging
+          state.score += 10;
+        }
+      }
+
+      // friction on angle
+      state.angle *= 0.995;
+      updateUI();
+    }
+
+    function gameOver(){
+      running = false;
+      if(state.score > state.best){ state.best = state.score; localStorage.setItem('carrera_best', String(state.best)); }
+      bestEl.textContent = state.best;
+      alert('Juego terminado! Puntuación: ' + state.score + '\nPulsa Iniciar para volver a jugar.');
+    }
+
+    function updateUI(){ speedEl.textContent = Math.round(state.speed);
+      distanceEl.textContent = state.distance;
+      livesEl.textContent = state.lives;
+      scoreEl.textContent = state.score;
+    }
+
+    // Drawing
+    function drawRoad(){
+      // road background
+      ctx.fillStyle = '#1f2937';
+      ctx.fillRect((W-road.width)/2, 0, road.width, H);
+
+      // side grass
+      ctx.fillStyle = '#052e02';
+      ctx.fillRect(0,0,(W-road.width)/2,H);
+      ctx.fillRect((W-road.width)/2+road.width,0,(W-road.width)/2,H);
+
+      // lane lines
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 3;
+      for(let i=1;i<road.laneCount;i++){
+        const lx = (W-road.width)/2 + i*laneWidth;
+        ctx.setLineDash([20,18]);
+        ctx.beginPath(); ctx.moveTo(lx,0); ctx.lineTo(lx,H); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+
+      // road borders
+      ctx.strokeStyle = '#111827'; ctx.lineWidth=8;
+      ctx.strokeRect((W-road.width)/2,0,road.width,H);
+    }
+
+    function drawPlayer(){
+      ctx.save();
+      ctx.translate(state.x, state.y);
+      ctx.rotate(state.angle);
+      // shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.fillRect(-player.w/2, player.h/2 + 8, player.w, 8);
+      // car body
+      ctx.fillStyle = player.color;
+      roundRect(ctx, -player.w/2, -player.h/2, player.w, player.h, 6, true, false);
+      // windows
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      roundRect(ctx, -player.w/2+6, -player.h/2+6, player.w-12, player.h/3, 3, true, false);
+      ctx.restore();
+    }
+
+    function drawObstacles(){
+      obstacles.forEach(ob=>{
+        ctx.save(); ctx.translate(ob.x, ob.y);
+        if(ob.type==='car'){
+          roundRect(ctx, -ob.w/2, -ob.h/2, ob.w, ob.h, 6, true, false);
+          ctx.fillStyle = 'rgba(0,0,0,0.12)';
+          ctx.fillRect(-ob.w/4, -ob.h/4, ob.w/2, ob.h/6);
+        } else {
+          // cone
+          ctx.beginPath(); ctx.moveTo(0, -ob.h/2); ctx.lineTo(ob.w/2, ob.h/2); ctx.lineTo(-ob.w/2, ob.h/2); ctx.closePath(); ctx.fill();
+        }
+        ctx.restore();
+      });
+    }
+
+    function drawHUD(){
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.fillRect(12,12,220,84);
+      ctx.fillStyle = '#fff'; ctx.font = '14px Arial';
+      ctx.fillText('Vel: ' + Math.round(state.speed) + ' km/h', 22,34);
+      ctx.fillText('Dist: ' + state.distance + ' m', 22,54);
+      ctx.fillText('Punt: ' + state.score, 22,74);
+    }
+
+    function loop(ts){
+      if(!running) return; if(paused){ requestAnimationFrame(loop); return; }
+      const dt = Math.min(1/30,(ts - lastTs)/1000); lastTs = ts;
+      update(dt);
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    function render(){
+      ctx.clearRect(0,0,W,H);
+      drawRoad();
+
+      // draw scrolling horizon/lines to give speed sense
+      const speedFactor = state.speed/ state.maxSpeed;
+      for(let i=0;i<20;i++){
+        const y = (i*80 + (Date.now()*0.12*speedFactor)%80);
+        ctx.fillStyle = 'rgba(255,255,255,'+ (0.03 + 0.12*(i%2)) +')';
+        ctx.fillRect(W/2 - 2, y, 4, 30);
+      }
+
+      drawObstacles();
+      drawPlayer();
+      drawHUD();
+    }
+
+    // Utility: rounded rect
+    function roundRect(ctx,x,y,w,h,r,fill,stroke){
+      if (typeof r === 'undefined') r = 5;
+      if (typeof r === 'number') r = {tl: r, tr: r, br: r, bl: r};
+      ctx.beginPath();
+      ctx.moveTo(x + r.tl, y);
+      ctx.lineTo(x + w - r.tr, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+      ctx.lineTo(x + w, y + h - r.br);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+      ctx.lineTo(x + r.bl, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+      ctx.lineTo(x, y + r.tl);
+      ctx.quadraticCurveTo(x, y, x + r.tl, y);
+      ctx.closePath();
+      if(fill){ ctx.fill(); }
+      if(stroke){ ctx.stroke(); }
+    }
+
+    // Responsive canvas
+    function fitCanvas(){
+      const wrap = document.getElementById('gameWrap');
+      const maxW = Math.min(window.innerWidth - 360, 1100);
+      const newW = Math.max(680, maxW);
+      const ratio = canvas.width / canvas.height;
+      canvas.style.width = newW + 'px';
+      canvas.style.height = Math.round(newW/ratio) + 'px';
+    }
+    window.addEventListener('resize', fitCanvas);
+    fitCanvas();
+
+    // Show some intro instructions until started
+    function drawIntro(){
+      ctx.clearRect(0,0,W,H);
+      drawRoad();
+      ctx.fillStyle = '#fff'; ctx.font='28px Arial'; ctx.textAlign='center';
+      ctx.fillText('Pulsa INICIAR para jugar', W/2, H/2 - 20);
+      ctx.font='16px Arial';
+      ctx.fillText('Flechas / WASD para controlar. Evita coches y conos. Buena suerte!', W/2, H/2 + 12);
+    }
+    drawIntro();
+
+  </script>
 </body>
 </html>
-
