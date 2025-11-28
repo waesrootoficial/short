@@ -3,25 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Car Clicker Ultimate v1.1</title>
+<title>Car Clicker Modern v2.0</title>
 <style>
+/* Reset básico */
+* { margin:0; padding:0; box-sizing:border-box; }
+
 body {
-    margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
-    color: #fff;
+    background: linear-gradient(to bottom, #1f1c2c, #928dab);
     display: flex;
     justify-content: center;
     min-height: 100vh;
-    overflow: hidden;
+    color: #fff;
 }
+
 .container {
     display: flex;
-    width: 100%;
     max-width: 1200px;
+    width: 100%;
     padding: 20px;
-    box-sizing: border-box;
 }
+
+/* Panel principal */
 #main {
     flex: 1;
     display: flex;
@@ -29,16 +32,20 @@ body {
     align-items: center;
     position: relative;
 }
+
+/* Título y versión */
 #title {
-    font-size: 2.5em;
+    font-size: 3em;
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
     margin-bottom: 10px;
-    text-shadow: 2px 2px 10px cyan;
 }
 #version {
     font-size: 1em;
     color: #ccc;
     margin-bottom: 20px;
 }
+
+/* Estadísticas modernas */
 .stats {
     display: flex;
     flex-wrap: wrap;
@@ -48,65 +55,72 @@ body {
 }
 .stats p {
     background: rgba(0,0,0,0.5);
-    padding: 10px 15px;
-    border-radius: 8px;
-    margin: 0;
-    font-size: 1.2em;
+    padding: 15px 20px;
+    border-radius: 15px;
+    font-size: 1.3em;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
+
+/* Coche clicable */
 #clicker {
     width: 300px;
-    height: auto;
     cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.2s;
-    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border-radius: 20px;
 }
+
+/* Tienda moderna */
 #shop {
     width: 350px;
     margin-left: 30px;
     background: rgba(0,0,0,0.6);
-    border-radius: 10px;
-    padding: 15px;
-    box-sizing: border-box;
-    height: fit-content;
+    border-radius: 20px;
+    padding: 20px;
     overflow-y: auto;
     max-height: 80vh;
 }
 #shop h2 {
     text-align: center;
-    margin-top: 0;
     font-size: 2em;
+    margin-bottom: 20px;
 }
 .shop-item {
     background: rgba(255,255,255,0.1);
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 12px;
-    position: relative;
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+.shop-item:hover {
+    transform: scale(1.03);
+    background: rgba(255,255,255,0.15);
 }
 .shop-item p {
-    margin: 0 0 10px 0;
     font-size: 1.2em;
+    margin-bottom: 10px;
 }
 .shop-item button {
     width: 100%;
-    padding: 10px;
-    background: #ff4500;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+    padding: 12px;
     font-size: 1.2em;
-    transition: background 0.15s, transform 0.1s;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(90deg,#ff6a00,#ee0979);
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.15s;
 }
 .shop-item button:hover {
-    background: #ff6347;
     transform: scale(1.05);
+    background: linear-gradient(90deg,#ff9a00,#ff00ff);
 }
 
-/* Partículas mejoradas */
+/* Partículas modernas */
 .particle {
     position: absolute;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     pointer-events: none;
     animation: particleAnim 800ms ease-out forwards;
@@ -121,8 +135,8 @@ body {
 <body>
 <div class="container">
     <div id="main">
-        <div id="title">CAR CLICKER FUN</div>
-        <div id="version">v1.1</div>
+        <div id="title">CAR CLICKER MODERN</div>
+        <div id="version">v2.0</div>
         <div class="stats">
             <p>💰 Dinero: $<span id="money">0</span></p>
             <p>⚡ Por clic: $<span id="moneyPerClick">1</span></p>
@@ -133,39 +147,39 @@ body {
     </div>
 
     <div id="shop">
-        <h2>Mejoras y Objetos</h2>
+        <h2>Tienda y Mejoras</h2>
 
         <div class="shop-item">
             <p>🚀 Turbo Boost (+1 $/clic)</p>
-            <button onclick="buyUpgrade('turbo',1,0)">Comprar</button>
+            <button onclick="buyUpgrade('turbo',1,0,50)">Comprar</button>
         </div>
         <div class="shop-item">
             <p>💎 Nitro (+5 $/clic, +1 $/seg)</p>
-            <button onclick="buyUpgrade('nitro',5,1)">Comprar</button>
+            <button onclick="buyUpgrade('nitro',5,1,250)">Comprar</button>
         </div>
         <div class="shop-item">
             <p>⚡ Motor Pro (+20 $/clic, +5 $/seg)</p>
-            <button onclick="buyUpgrade('motor',20,5)">Comprar</button>
+            <button onclick="buyUpgrade('motor',20,5,1000)">Comprar</button>
         </div>
         <div class="shop-item">
             <p>🏁 Llantas Rápidas (+2 $/clic)</p>
-            <button onclick="buyUpgrade('llantas',2,0)">Comprar</button>
+            <button onclick="buyUpgrade('llantas',2,0,150)">Comprar</button>
         </div>
         <div class="shop-item">
             <p>🛠️ Suspensión Mejorada (+0 $/clic, +2 $/seg)</p>
-            <button onclick="buyUpgrade('suspension',0,2)">Comprar</button>
+            <button onclick="buyUpgrade('suspension',0,2,200)">Comprar</button>
         </div>
         <div class="shop-item">
             <p>🔥 Escape Deportivo (+3 $/clic, +1 $/seg)</p>
-            <button onclick="buyUpgrade('escape',3,1)">Comprar</button>
+            <button onclick="buyUpgrade('escape',3,1,300)">Comprar</button>
         </div>
         <div class="shop-item">
             <p>🎨 Pintura Especial (+1 $/clic)</p>
-            <button onclick="buyUpgrade('pintura',1,0)">Comprar</button>
+            <button onclick="buyUpgrade('pintura',1,0,100)">Comprar</button>
         </div>
         <div class="shop-item">
             <p>💨 Aerodinámica Avanzada (+0 $/clic, +3 $/seg)</p>
-            <button onclick="buyUpgrade('aero',0,3)">Comprar</button>
+            <button onclick="buyUpgrade('aero',0,3,400)">Comprar</button>
         </div>
     </div>
 </div>
@@ -200,7 +214,7 @@ function createParticle(x,y){
     p.classList.add('particle');
     const angle = Math.random()*2*Math.PI;
     const distance = 50 + Math.random()*30;
-    const colors = ['cyan','magenta','yellow','orange','white','lime','pink'];
+    const colors = ['#00ffff','#ff00ff','#ffff00','#ff4500','#00ff00','#ff69b4'];
     p.style.background = colors[Math.floor(Math.random()*colors.length)];
     p.style.left = x+'px';
     p.style.top = y+'px';
@@ -216,24 +230,24 @@ clicker.addEventListener('click', ()=>{
 
     // Animación coche
     clicker.style.transform = 'scale(1.2)';
-    clicker.style.boxShadow = '0 0 30px cyan, 0 0 15px magenta';
+    clicker.style.boxShadow = '0 0 30px #00ffff,0 0 15px #ff00ff';
     setTimeout(()=>{clicker.style.transform='scale(1)'; clicker.style.boxShadow='none';},100);
 
     // Crear partículas
     const rect = clicker.getBoundingClientRect();
     const mainRect = main.getBoundingClientRect();
-    const x = rect.left - mainRect.left + rect.width/2 - 5;
-    const y = rect.top - mainRect.top + rect.height/2 - 5;
+    const x = rect.left - mainRect.left + rect.width/2 - 6;
+    const y = rect.top - mainRect.top + rect.height/2 - 6;
 
-    for(let i=0;i<20;i++) createParticle(x,y);
+    for(let i=0;i<25;i++) createParticle(x,y);
 
     updateStats();
     save();
 });
 
-function buyUpgrade(name, clickBonus, autoBonus){
-    if(money >= 50){ // puedes ajustar precio o añadir variable de precio
-        money -= 50;
+function buyUpgrade(name, clickBonus, autoBonus, price){
+    if(money >= price){
+        money -= price;
         moneyPerClick += clickBonus;
         autoMoney += autoBonus;
         upgrades[name]++;
