@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Car Clicker Ultimate</title>
+<title>Car Clicker Ultimate v1.0</title>
 <style>
 body {
     margin: 0;
@@ -63,6 +63,12 @@ body {
     text-align: center;
     margin-top: 0;
 }
+.version {
+    text-align: center;
+    font-size: 0.9em;
+    color: #ccc;
+    margin-bottom: 10px;
+}
 .shop-item {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
@@ -121,6 +127,7 @@ body {
 <body>
 <div class="container">
     <div id="main">
+        <div class="version">Car Clicker Ultimate v1.0</div>
         <div class="stats">
             <p>💰 Dinero: $<span id="money">0</span></p>
             <p>🚗 Coches: <span id="cars">0</span></p>
@@ -178,7 +185,7 @@ function createParticle(x,y){
     p.classList.add('particle');
     const angle = Math.random()*2*Math.PI;
     const distance = 40 + Math.random()*20;
-    const colors = ['gold','orange','yellow'];
+    const colors = ['gold','orange','yellow','white'];
     p.style.background = colors[Math.floor(Math.random()*colors.length)];
     p.style.left = x+'px';
     p.style.top = y+'px';
