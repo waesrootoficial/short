@@ -368,7 +368,68 @@
 
   </script>
   <script>
-    // === CLICKER UPGRADE SYSTEM ===
+    // === CLICKER + COOKIE-CLICKER SYSTEM ===
+    // Recursos ("velocidad por segundo")
+    let cps = parseInt(localStorage.getItem('cps')||'0',10);
+    let cookies = parseInt(localStorage.getItem('cookies')||'0',10);
+
+    function saveCookieData(){
+      localStorage.setItem('cps', cps);
+      localStorage.setItem('cookies', cookies);
+    }
+
+    // Botón generador tipo cookie-clicker
+    const cookieBtnCard = document.createElement('div');
+    cookieBtnCard.className = 'card';
+    cookieBtnCard.innerHTML = `
+      <div class="title">Clicker</div>
+      <div class="small">Pulsa para generar potencia.</div>
+      <button id="cookieBtn" class="primary">Generar +1 ⚡</button>
+      <div class="small">Potencia: <span id="cookieCount">${cookies}</span></div>
+      <div class="small">Velocidad por segundo (CPS): <span id="cpsView">${cps}</span></div>
+    `;
+    ui.appendChild(cookieBtnCard);
+
+    const cookieBtn = cookieBtnCard.querySelector('#cookieBtn');
+    const cookieCount = cookieBtnCard.querySelector('#cookieCount');
+    const cpsView = cookieBtnCard.querySelector('#cpsView');
+
+    cookieBtn.addEventListener('click', ()=>{
+      cookies++;
+      cookieCount.textContent = cookies;
+      saveCookieData();
+    });
+
+    // Upgrade CPS
+    const cpsUpgradeCard = document.createElement('div');
+    cpsUpgradeCard.className = 'card';
+    cpsUpgradeCard.innerHTML = `
+      <div class="title">Mejoras de CPS</div>
+      <div class="small">Aumenta tu velocidad generada por segundo</div>
+      <button id="cpsUpBtn" class="primary">Comprar +1 CPS (coste 20 ⚡)</button>
+    `;
+    ui.appendChild(cpsUpgradeCard);
+
+    const cpsUpBtn = cpsUpgradeCard.querySelector('#cpsUpBtn');
+    cpsUpBtn.addEventListener('click', ()=>{
+      if(cookies >= 20){
+        cookies -= 20;
+        cps++;
+        cookieCount.textContent = cookies;
+        cpsView.textContent = cps;
+        saveCookieData();
+      }
+    });
+
+    // Integrar CPS a la velocidad del coche
+    setInterval(()=>{
+      cookies += cps;
+      cookieCount.textContent = cookies;
+      state.maxSpeed += cps * 0.6; // cada cps aumenta un poco la velocidad max por segundo
+      saveCookieData();
+    }, 1000);
+
+    // === SPEED UPGRADE SYSTEM ORIGINAL ===
     let upgrade = parseInt(localStorage.getItem('speed_upgrade') || '0',10);
     function saveUpgrade(){ localStorage.setItem('speed_upgrade', upgrade); }
 
