@@ -1,87 +1,121 @@
-let money = parseInt(localStorage.getItem('money'))||0;
-let cars = parseInt(localStorage.getItem('cars'))||0;
-let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick'))||1;
-let autoMoney = parseInt(localStorage.getItem('autoMoney'))||0;
-let upgrades = JSON.parse(localStorage.getItem('upgrades'))||{turbo:0,nitro:0,motor:0,llantas:0,suspension:0,escape:0,pintura:0,aero:0};
+// --- VARIABLES ----
+let money = +localStorage.money || 0;
+let cars = +localStorage.cars || 0;
+let perClick = +localStorage.perClick || 1;
+let perSecond = +localStorage.perSecond || 0;
 
-const clicker=document.getElementById('clicker');
-const main=document.getElementById('main');
-const moneyEl=document.getElementById('money');
-const moneyPerClickEl=document.getElementById('moneyPerClick');
-const autoMoneyEl=document.getElementById('autoMoney');
-const carsEl=document.getElementById('cars');
+let upgrades = JSON.parse(localStorage.upgrades || `{
+    "turbo":0,
+    "nitro":0,
+    "motor":0,
+    "neon":0,
+    "spoiler":0
+}`);
 
-function updateStats(){
-    moneyEl.textContent=money;
-    moneyPerClickEl.textContent=moneyPerClick;
-    autoMoneyEl.textContent=autoMoney;
-    carsEl.textContent=cars;
-    for(let key in upgrades){
-        let span=document.getElementById('count-'+key);
-        if(span) span.textContent=upgrades[key];
-    }
-    updateCarVisual();
+const costs = {
+    turbo: 50,
+    nitro: 250,
+    motor: 500,
+    neon: 150,
+    spoiler: 400
+};
+
+const clicker = document.getElementById("clicker");
+const main = document.getElementById("main");
+
+// --- GUARDAR ---
+function save() {
+    localStorage.money = money;
+    localStorage.cars = cars;
+    localStorage.perClick = perClick;
+    localStorage.perSecond = perSecond;
+    localStorage.upgrades = JSON.stringify(upgrades);
 }
 
-function updateCarVisual(){
-    if(upgrades.motor>=5){ clicker.style.filter='hue-rotate(180deg) saturate(150%)'; }
-    else if(upgrades.turbo>=5){ clicker.style.filter='hue-rotate(90deg) saturate(120%)'; }
-    else{ clicker.style.filter='none'; }
-}
+// --- ACTUALIZAR ---
+function update() {
+    moneyEl.textContent = money;
+    moneyPerClick.textContent = perClick;
+    autoMoney.textContent = perSecond;
+    carsEl.textContent = cars;
 
-function createParticle(x,y,type='default'){
-    const p=document.createElement('div');
-    p.classList.add('particle');
-    const angle=Math.random()*2*Math.PI;
-    const distance=50+Math.random()*30;
-    const colors={'default':['#00ffff','#ff00ff','#ffff00','#ff4500','#00ff00','#ff69b4'],'fire':['#ff4500','#ff6347','#ff0000','#ff8c00'],'smoke':['#888','#bbb','#555']};
-    let colorArr=colors[type]||colors.default;
-    p.style.background=colorArr[Math.floor(Math.random()*colorArr.length)];
-    p.style.left=x+'px';
-    p.style.top=y+'px';
-    p.style.setProperty('--x',Math.cos(angle)*distance+'px');
-    p.style.setProperty('--y',Math.sin(angle)*distance+'px');
-    main.appendChild(p);
-    setTimeout(()=>p.remove(),800);
-}
+    for (let n in upgrades)
+        document.getElementById("cnt-" + n).textContent = upgrades[n];
 
-clicker.addEventListener('click', ()=>{
-    money+=moneyPerClick; cars+=1;
-    clicker.style.transform='scale(1.2)';
-    clicker.style.boxShadow='0 0 30px #00ffff,0 0 15px #ff00ff';
-    setTimeout(()=>{clicker.style.transform='scale(1)'; clicker.style.boxShadow='none';},100);
-    const rect=clicker.getBoundingClientRect();
-    const mainRect=main.getBoundingClientRect();
-    const x=rect.left-mainRect.left+rect.width/2-6;
-    const y=rect.top-mainRect.top+rect.height/2-6;
-
-    let type='default';
-    if(upgrades.nitro>=3) type='fire';
-    if(upgrades.suspension>=3) type='smoke';
-    for(let i=0;i<25;i++) createParticle(x,y,type);
-    updateStats();
     save();
+}
+
+const moneyEl = document.getElementById("money");
+const moneyPerClick = document.getElementById("moneyPerClick");
+const autoMoney = document.getElementById("autoMoney");
+const carsEl = document.getElementById("cars");
+
+// --- PARTICULAS ---
+function particleEffect(x, y, type="default") {
+    for (let i = 0; i < 20; i++) {
+        const p = document.createElement("div");
+        p.className = "particle";
+
+        let colors = ["#0ff","#f0f","#ff0","#0f0"];
+        if (type === "fire") colors = ["#f00","#ff6600","#ff3300"];
+        if (type === "neon") colors = ["#0ff","#0ff","#0ff"];
+
+        p.style.background = colors[Math.floor(Math.random()*colors.length)];
+
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 40 + Math.random()*20;
+
+        p.style.left = x + "px";
+        p.style.top = y + "px";
+
+        p.style.setProperty("--x", Math.cos(angle)*dist + "px");
+        p.style.setProperty("--y", Math.sin(angle)*dist + "px");
+
+        main.appendChild(p);
+        setTimeout(()=> p.remove(), 700);
+    }
+}
+
+// --- CLICK ---
+clicker.addEventListener("click", e => {
+    money += perClick;
+    cars++;
+
+    const rect = clicker.getBoundingClientRect();
+    const mx = rect.left + rect.width/2;
+    const my = rect.top + rect.height/2;
+
+    let type = "default";
+    if (upgrades.nitro > 0) type = "fire";
+    if (upgrades.neon > 0) type = "neon";
+
+    particleEffect(mx, my, type);
+
+    update();
 });
 
-function buyUpgrade(name,clickBonus,autoBonus,price){
-    if(money>=price){
-        money-=price;
-        moneyPerClick+=clickBonus;
-        autoMoney+=autoBonus;
-        upgrades[name]++;
-        updateStats();
-        save();
-    }
+// --- AUTO-GENERACIÓN ---
+setInterval(()=>{
+    money += perSecond;
+    update();
+},1000);
+
+// --- COMPRAR ---
+function buy(item) {
+    const price = costs[item];
+
+    if (money < price) return;
+
+    money -= price;
+    upgrades[item]++;
+
+    if (item === "turbo") perClick += 1;
+    if (item === "nitro") { perClick += 4; perSecond += 1; }
+    if (item === "motor") { perClick += 10; perSecond += 3; }
+    if (item === "spoiler") perClick += 8;
+    if (item === "neon") clicker.style.filter = "drop-shadow(0 0 25px #0ff)";
+
+    update();
 }
 
-setInterval(()=>{ money+=autoMoney; updateStats(); save(); },1000);
-
-function save(){
-    localStorage.setItem('money',money);
-    localStorage.setItem('cars',cars);
-    localStorage.setItem('moneyPerClick',moneyPerClick);
-    localStorage.setItem('autoMoney',autoMoney);
-    localStorage.setItem('upgrades',JSON.stringify(upgrades));
-}
-
-updateStats();
+update();
