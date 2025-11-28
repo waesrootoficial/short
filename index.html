@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Car Clicker Pro</title>
+<title>Car Clicker Pro con Partículas</title>
 <style>
 body {
     margin: 0;
@@ -27,7 +27,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
+    position: relative; /* Muy importante para partículas */
 }
 .stats {
     display: flex;
@@ -48,6 +48,7 @@ body {
     height: auto;
     cursor: pointer;
     transition: transform 0.1s;
+    position: relative; /* importante */
 }
 #clicker:active {
     transform: scale(1.2) rotate(-10deg);
@@ -92,8 +93,8 @@ body {
 /* Partículas */
 .particle {
     position: absolute;
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     background: gold;
     border-radius: 50%;
     pointer-events: none;
@@ -166,7 +167,7 @@ function createParticle(x,y){
     const p = document.createElement('div');
     p.classList.add('particle');
     const angle = Math.random()*2*Math.PI;
-    const distance = 50 + Math.random()*30;
+    const distance = 30 + Math.random()*20;
     p.style.left = x+'px';
     p.style.top = y+'px';
     p.style.setProperty('--x', Math.cos(angle)*distance+'px');
@@ -175,18 +176,24 @@ function createParticle(x,y){
     setTimeout(()=>p.remove(),600);
 }
 
-clicker.addEventListener('click', (e)=>{
+clicker.addEventListener('click', ()=>{
     money += moneyPerClick;
+
     // Pop coche
     clicker.style.transform = 'scale(1.2)';
     setTimeout(()=>{clicker.style.transform='scale(1)';},100);
-    // Crear partículas en el centro del coche
+
+    // Coordenadas dentro del contenedor
     const rect = clicker.getBoundingClientRect();
-    const x = rect.left + rect.width/2 - main.getBoundingClientRect().left;
-    const y = rect.top + rect.height/2 - main.getBoundingClientRect().top;
-    for(let i=0;i<5;i++){ // 5 partículas
+    const mainRect = main.getBoundingClientRect();
+    const x = rect.left - mainRect.left + rect.width/2 - 4; // centrado
+    const y = rect.top - mainRect.top + rect.height/2 - 4;
+
+    // Crear 5 partículas
+    for(let i=0;i<5;i++){
         createParticle(x,y);
     }
+
     update();
     save();
 });
