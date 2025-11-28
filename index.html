@@ -1,30 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Clicker Todo en Uno</title>
+<style>
+/* ===== ESTILOS ===== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background: rgba(0,0,0,0.8);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.6);
+}
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    color: #ffd700;
+    text-shadow: 0 0 10px #ffd700;
+}
+
+.stats p {
+    font-size: 1.2em;
+    margin: 8px 0;
+}
+
+.clicker {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.car-img {
+    width: 180px;
+    transition: transform 0.1s;
+    cursor: pointer;
+}
+
+.car-img:active {
+    transform: scale(1.2) rotate(-10deg);
+}
+
+button {
+    background-color: #ffd700;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: 0.2s;
+}
+
+button:hover {
+    background-color: #ffc107;
+    transform: scale(1.05);
+}
+
+.shop {
+    margin-top: 25px;
+    text-align: left;
+}
+
+.shop-item {
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🚗 Car Clicker PRO</h1>
+
+    <div class="stats">
+        <p>💰 Dinero: $<span id="money">0</span></p>
+        <p>🚗 Coches: <span id="cars">0</span></p>
+        <p>⚡ Dinero por clic: $<span id="moneyPerClick">1</span></p>
+        <p>🕒 Dinero por segundo: $<span id="autoMoney">0</span></p>
+    </div>
+
+    <div class="clicker">
+        <img src="https://i.ibb.co/x6b3kz2/car.png" alt="Coche" id="carClick" class="car-img">
+        <button id="clickCar">Clic en el coche!</button>
+    </div>
+
+    <div class="shop">
+        <h2>Tienda de coches</h2>
+        <div class="shop-item">
+            <p>🚙 Mini Coche (+1 $/clic) - $50</p>
+            <button onclick="buyCar(50, 1, 0)">Comprar</button>
+        </div>
+        <div class="shop-item">
+            <p>🚐 SUV (+5 $/clic, +1 $/seg) - $250</p>
+            <button onclick="buyCar(250, 5, 1)">Comprar</button>
+        </div>
+        <div class="shop-item">
+            <p>🏎️ Supercar (+20 $/clic, +5 $/seg) - $1000</p>
+            <button onclick="buyCar(1000, 20, 5)">Comprar</button>
+        </div>
+    </div>
+
+    <button id="reset">🔄 Resetear Juego</button>
+</div>
+
+<audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+
+<script>
+// ===== VARIABLES =====
 let money = parseInt(localStorage.getItem('money')) || 0;
 let cars = parseInt(localStorage.getItem('cars')) || 0;
 let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick')) || 1;
+let autoMoney = parseInt(localStorage.getItem('autoMoney')) || 0;
 
 const moneyDisplay = document.getElementById('money');
 const carsDisplay = document.getElementById('cars');
+const moneyPerClickDisplay = document.getElementById('moneyPerClick');
+const autoMoneyDisplay = document.getElementById('autoMoney');
 const carClick = document.getElementById('carClick');
 const resetButton = document.getElementById('reset');
+const clickSound = document.getElementById('clickSound');
 
+// ===== FUNCIONES =====
 function updateDisplay() {
     moneyDisplay.textContent = money;
     carsDisplay.textContent = cars;
+    moneyPerClickDisplay.textContent = moneyPerClick;
+    autoMoneyDisplay.textContent = autoMoney;
 }
 
-// Click en coche
 carClick.addEventListener('click', () => {
     money += moneyPerClick;
+    clickSound.currentTime = 0;
+    clickSound.play();
     updateDisplay();
     saveGame();
 });
 
-// Comprar coches
-function buyCar(price, increment) {
+function buyCar(price, clickBonus, autoBonus) {
     if (money >= price) {
         money -= price;
         cars += 1;
-        moneyPerClick += increment;
+        moneyPerClick += clickBonus;
+        autoMoney += autoBonus;
         updateDisplay();
         saveGame();
     } else {
@@ -32,23 +166,31 @@ function buyCar(price, increment) {
     }
 }
 
-// Guardar progreso
+setInterval(() => {
+    money += autoMoney;
+    updateDisplay();
+    saveGame();
+}, 1000);
+
 function saveGame() {
     localStorage.setItem('money', money);
     localStorage.setItem('cars', cars);
     localStorage.setItem('moneyPerClick', moneyPerClick);
+    localStorage.setItem('autoMoney', autoMoney);
 }
 
-// Resetear juego
 resetButton.addEventListener('click', () => {
-    if(confirm("¿Estás seguro de resetear?")) {
+    if(confirm("¿Seguro que quieres resetear?")) {
         money = 0;
         cars = 0;
         moneyPerClick = 1;
+        autoMoney = 0;
         updateDisplay();
         saveGame();
     }
 });
 
 updateDisplay();
-
+</script>
+</body>
+</html>
