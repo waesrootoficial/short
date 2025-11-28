@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Car Clicker Ultimate v1.0</title>
+<title>Car Clicker Fun</title>
 <style>
 body {
     margin: 0;
@@ -18,7 +18,7 @@ body {
 .container {
     display: flex;
     width: 100%;
-    max-width: 1100px;
+    max-width: 1000px;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -29,22 +29,13 @@ body {
     align-items: center;
     position: relative;
 }
-.stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
+#title {
+    font-size: 3em;
     margin-bottom: 20px;
-}
-.stats p {
-    background: rgba(0,0,0,0.5);
-    padding: 10px 15px;
-    border-radius: 8px;
-    margin: 0;
-    font-size: 1.1em;
+    text-shadow: 2px 2px 10px cyan;
 }
 #clicker {
-    width: 250px;
+    width: 300px;
     height: auto;
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.2s;
@@ -62,209 +53,119 @@ body {
 #shop h2 {
     text-align: center;
     margin-top: 0;
-}
-.version {
-    text-align: center;
-    font-size: 0.9em;
-    color: #ccc;
-    margin-bottom: 10px;
+    font-size: 1.8em;
 }
 .shop-item {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255,255,255,0.1);
     border-radius: 8px;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 12px;
     position: relative;
 }
 .shop-item p {
-    margin: 0 0 8px 0;
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
 }
 .shop-item button {
     width: 100%;
-    padding: 8px;
-    background: #ffd700;
+    padding: 10px;
+    background: #ff4500;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 1.2em;
     transition: background 0.15s, transform 0.1s;
 }
 .shop-item button:hover {
-    background: #ffc107;
-    transform: scale(1.03);
+    background: #ff6347;
+    transform: scale(1.05);
 }
 
-/* Partículas */
+/* Partículas mejoradas */
 .particle {
     position: absolute;
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     pointer-events: none;
-    animation: particleAnim 700ms linear forwards;
+    animation: particleAnim 800ms ease-out forwards;
+    opacity: 0.9;
 }
 @keyframes particleAnim {
     0% {opacity:1; transform: translate(0,0) scale(1);}
-    100% {opacity:0; transform: translate(var(--x), var(--y)) scale(0.5);}
-}
-
-/* Monedas al comprar */
-.coin {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: radial-gradient(circle, gold 0%, orange 80%);
-    border-radius: 50%;
-    pointer-events: none;
-    animation: coinAnim 800ms forwards;
-}
-@keyframes coinAnim {
-    0% {opacity:1; transform: translate(0,0) scale(1);}
-    100% {opacity:0; transform: translate(0,-80px) scale(0.5);}
+    100% {opacity:0; transform: translate(var(--x), var(--y)) scale(0);}
 }
 </style>
 </head>
 <body>
 <div class="container">
     <div id="main">
-        <div class="version">Car Clicker Ultimate v1.0</div>
-        <div class="stats">
-            <p>💰 Dinero: $<span id="money">0</span></p>
-            <p>🚗 Coches: <span id="cars">0</span></p>
-            <p>⚡ Por clic: $<span id="moneyPerClick">1</span></p>
-            <p>🕒 Por segundo: $<span id="autoMoney">0</span></p>
-        </div>
+        <div id="title">CAR CLICKER FUN</div>
         <img src="h.png" id="clicker" alt="Coche">
-        <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
     </div>
 
     <div id="shop">
-        <h2>Tienda de Coches</h2>
+        <h2>Mejoras</h2>
         <div class="shop-item">
-            <p>🚙 Mini Coche (+1 $/clic) — <span id="price1">50</span>$</p>
-            <button onclick="buyCar(0,1,0)">Comprar</button>
+            <p>🚀 Turbo Boost</p>
+            <button onclick="buyUpgrade('turbo')">Mejorar</button>
         </div>
         <div class="shop-item">
-            <p>🚐 SUV (+5 $/clic, +1 $/seg) — <span id="price2">250</span>$</p>
-            <button onclick="buyCar(1,5,1)">Comprar</button>
+            <p>💎 Nitro</p>
+            <button onclick="buyUpgrade('nitro')">Mejorar</button>
         </div>
         <div class="shop-item">
-            <p>🏎️ Supercar (+20 $/clic, +5 $/seg) — <span id="price3">1000</span>$</p>
-            <button onclick="buyCar(2,20,5)">Comprar</button>
+            <p>⚡ Motor Pro</p>
+            <button onclick="buyUpgrade('motor')">Mejorar</button>
         </div>
     </div>
 </div>
 
 <script>
-let money = parseInt(localStorage.getItem('money')) || 0;
-let cars = parseInt(localStorage.getItem('cars')) || 0;
-let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick')) || 1;
-let autoMoney = parseInt(localStorage.getItem('autoMoney')) || 0;
-let prices = localStorage.getItem('prices') ? JSON.parse(localStorage.getItem('prices')) : [50,250,1000];
-let owned = localStorage.getItem('owned') ? JSON.parse(localStorage.getItem('owned')) : [0,0,0];
+let upgrades = {
+    turbo: 0,
+    nitro: 0,
+    motor: 0
+};
 
-const moneyEl = document.getElementById('money');
-const carsEl = document.getElementById('cars');
-const moneyPerClickEl = document.getElementById('moneyPerClick');
-const autoMoneyEl = document.getElementById('autoMoney');
 const clicker = document.getElementById('clicker');
 const main = document.getElementById('main');
-const priceEl = [document.getElementById('price1'), document.getElementById('price2'), document.getElementById('price3')];
-const clickSound = document.getElementById('clickSound');
-
-function update(){
-    moneyEl.textContent = money;
-    carsEl.textContent = cars;
-    moneyPerClickEl.textContent = moneyPerClick;
-    autoMoneyEl.textContent = autoMoney;
-    for(let i=0;i<prices.length;i++) priceEl[i].textContent = prices[i];
-}
 
 function createParticle(x,y){
     const p = document.createElement('div');
     p.classList.add('particle');
     const angle = Math.random()*2*Math.PI;
-    const distance = 40 + Math.random()*20;
-    const colors = ['gold','orange','yellow','white'];
+    const distance = 50 + Math.random()*30;
+    const colors = ['cyan','magenta','yellow','orange','white'];
     p.style.background = colors[Math.floor(Math.random()*colors.length)];
     p.style.left = x+'px';
     p.style.top = y+'px';
     p.style.setProperty('--x', Math.cos(angle)*distance+'px');
     p.style.setProperty('--y', Math.sin(angle)*distance+'px');
     main.appendChild(p);
-    setTimeout(()=>p.remove(),700);
-}
-
-function createCoin(x,y){
-    const c = document.createElement('div');
-    c.classList.add('coin');
-    c.style.left = x+'px';
-    c.style.top = y+'px';
-    main.appendChild(c);
-    setTimeout(()=>c.remove(),800);
+    setTimeout(()=>p.remove(),800);
 }
 
 clicker.addEventListener('click', ()=>{
-    money += moneyPerClick;
-
-    // Sonido
-    clickSound.currentTime = 0;
-    clickSound.play();
-
-    // Animación pop coche
+    // Animación coche
     clicker.style.transform = 'scale(1.2)';
-    clicker.style.boxShadow = '0 0 20px gold';
+    clicker.style.boxShadow = '0 0 25px cyan';
     setTimeout(()=>{clicker.style.transform='scale(1)'; clicker.style.boxShadow='none';},100);
 
-    // Coordenadas centradas
+    // Coordenadas del click
     const rect = clicker.getBoundingClientRect();
     const mainRect = main.getBoundingClientRect();
-    const x = rect.left - mainRect.left + rect.width/2 - 4;
-    const y = rect.top - mainRect.top + rect.height/2 - 4;
+    const x = rect.left - mainRect.left + rect.width/2 - 5;
+    const y = rect.top - mainRect.top + rect.height/2 - 5;
 
-    for(let i=0;i<7;i++) createParticle(x,y);
-
-    update();
-    save();
+    // Crear partículas mejoradas
+    for(let i=0;i<15;i++) createParticle(x,y);
 });
 
-function buyCar(index, clickBonus, autoBonus){
-    if(money>=prices[index]){
-        money -= prices[index];
-        cars += 1;
-        moneyPerClick += clickBonus;
-        autoMoney += autoBonus;
-        owned[index] +=1;
-        prices[index] = Math.floor(prices[index]*1.15);
-        // Crear monedas animadas en el botón
-        const btn = priceEl[index].parentElement.querySelector('button');
-        const rect = btn.getBoundingClientRect();
-        const mainRect = main.getBoundingClientRect();
-        const x = rect.left - mainRect.left + rect.width/2 - 10;
-        const y = rect.top - mainRect.top - 10;
-        for(let i=0;i<5;i++) createCoin(x,y);
-        // Brillo del coche
-        clicker.style.boxShadow='0 0 25px cyan';
-        setTimeout(()=>clicker.style.boxShadow='none',300);
-        update();
-        save();
-    } else {
-        alert('No tienes suficiente dinero.');
-    }
+function buyUpgrade(name){
+    upgrades[name]++;
+    alert(name.toUpperCase() + " mejorado a nivel " + upgrades[name]);
 }
-
-setInterval(()=>{ money+=autoMoney; update(); save(); },1000);
-
-function save(){
-    localStorage.setItem('money',money);
-    localStorage.setItem('cars',cars);
-    localStorage.setItem('moneyPerClick',moneyPerClick);
-    localStorage.setItem('autoMoney',autoMoney);
-    localStorage.setItem('prices',JSON.stringify(prices));
-    localStorage.setItem('owned',JSON.stringify(owned));
-}
-
-update();
 </script>
 </body>
 </html>
