@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Car Clicker con Imagen</title>
+<title>Car Clicker Mejorado</title>
 <style>
 body {
     margin: 0;
@@ -86,21 +86,6 @@ body {
     background: #ffc107;
     transform: scale(1.03);
 }
-#reset {
-    width: 100%;
-    padding: 8px;
-    background: #ff4c4c;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    color: #fff;
-    font-size: 1em;
-    margin-top: 10px;
-    transition: background 0.15s;
-}
-#reset:hover {
-    background: #e04343;
-}
 </style>
 </head>
 <body>
@@ -112,24 +97,23 @@ body {
             <p>⚡ Por clic: $<span id="moneyPerClick">1</span></p>
             <p>🕒 Por segundo: $<span id="autoMoney">0</span></p>
         </div>
-        <img src="h.jpg" id="clicker" alt="Coche">
+        <img src="h.jpeg" id="clicker" alt="Coche">
     </div>
 
     <div id="shop">
         <h2>Tienda de Coches</h2>
         <div class="shop-item">
-            <p>🚙 Mini Coche (+1 $/clic) — $50</p>
-            <button onclick="buyCar(50,1,0)">Comprar</button>
+            <p>🚙 Mini Coche (+1 $/clic) — <span id="price1">50</span>$</p>
+            <button onclick="buyCar(1,1,0)">Comprar</button>
         </div>
         <div class="shop-item">
-            <p>🚐 SUV (+5 $/clic, +1 $/seg) — $250</p>
-            <button onclick="buyCar(250,5,1)">Comprar</button>
+            <p>🚐 SUV (+5 $/clic, +1 $/seg) — <span id="price2">250</span>$</p>
+            <button onclick="buyCar(2,5,1)">Comprar</button>
         </div>
         <div class="shop-item">
-            <p>🏎️ Supercar (+20 $/clic, +5 $/seg) — $1000</p>
-            <button onclick="buyCar(1000,20,5)">Comprar</button>
+            <p>🏎️ Supercar (+20 $/clic, +5 $/seg) — <span id="price3">1000</span>$</p>
+            <button onclick="buyCar(3,20,5)">Comprar</button>
         </div>
-        <button id="reset">🔄 Resetear Juego</button>
     </div>
 </div>
 
@@ -139,47 +123,67 @@ let cars = parseInt(localStorage.getItem('cars')) || 0;
 let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick')) || 1;
 let autoMoney = parseInt(localStorage.getItem('autoMoney')) || 0;
 
+let prices = [50,250,1000];
+let owned = [0,0,0];
+
 const moneyEl = document.getElementById('money');
 const carsEl = document.getElementById('cars');
 const moneyPerClickEl = document.getElementById('moneyPerClick');
 const autoMoneyEl = document.getElementById('autoMoney');
 const clicker = document.getElementById('clicker');
-const resetBtn = document.getElementById('reset');
+const priceEl = [document.getElementById('price1'), document.getElementById('price2'), document.getElementById('price3')];
 
 function update() {
     moneyEl.textContent = money;
     carsEl.textContent = cars;
     moneyPerClickEl.textContent = moneyPerClick;
     autoMoneyEl.textContent = autoMoney;
-}
-
-clicker.addEventListener('click', () => { money += moneyPerClick; update(); save(); });
-
-function buyCar(price, clickBonus, autoBonus){
-    if(money>=price){
-        money-=price;
-        cars+=1;
-        moneyPerClick+=clickBonus;
-        autoMoney+=autoBonus;
-        update();
-        save();
-    } else { alert('No tienes suficiente dinero.'); }
-}
-
-setInterval(() => { money+=autoMoney; update(); save(); },1000);
-
-resetBtn.addEventListener('click', () => {
-    if(confirm('¿Resetear progreso?')){
-        money=0; cars=0; moneyPerClick=1; autoMoney=0;
-        update(); save();
+    for(let i=0;i<prices.length;i++){
+        priceEl[i].textContent = prices[i];
     }
+}
+
+clicker.addEventListener('click', ()=>{
+    money += moneyPerClick;
+    clicker.style.transform = 'scale(1.2)';
+    setTimeout(()=>{clicker.style.transform='scale(1)';},100);
+    update();
+    save();
 });
 
-function save() {
-    localStorage.setItem('money', money);
-    localStorage.setItem('cars', cars);
-    localStorage.setItem('moneyPerClick', moneyPerClick);
-    localStorage.setItem('autoMoney', autoMoney);
+function buyCar(index,clickBonus,autoBonus){
+    if(money>=prices[index-1]){
+        money -= prices[index-1];
+        cars += 1;
+        moneyPerClick += clickBonus;
+        autoMoney += autoBonus;
+        owned[index-1] +=1;
+        // Incrementa precio 15% por cada compra
+        prices[index-1] = Math.floor(prices[index-1]*1.15);
+        update();
+        save();
+    } else {
+        alert('No tienes suficiente dinero.');
+    }
+}
+
+setInterval(()=>{ money+=autoMoney; update(); save(); },1000);
+
+function save(){
+    localStorage.setItem('money',money);
+    localStorage.setItem('cars',cars);
+    localStorage.setItem('moneyPerClick',moneyPerClick);
+    localStorage.setItem('autoMoney',autoMoney);
+    localStorage.setItem('prices',JSON.stringify(prices));
+    localStorage.setItem('owned',JSON.stringify(owned));
+}
+
+// Cargar precios guardados
+if(localStorage.getItem('prices')){
+    prices = JSON.parse(localStorage.getItem('prices'));
+}
+if(localStorage.getItem('owned')){
+    owned = JSON.parse(localStorage.getItem('owned'));
 }
 
 update();
