@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Car Clicker Fun</title>
+<title>Car Clicker Ultimate v1.1</title>
 <style>
 body {
     margin: 0;
@@ -30,9 +30,28 @@ body {
     position: relative;
 }
 #title {
-    font-size: 3em;
-    margin-bottom: 20px;
+    font-size: 2.5em;
+    margin-bottom: 10px;
     text-shadow: 2px 2px 10px cyan;
+}
+#version {
+    font-size: 1em;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+.stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.stats p {
+    background: rgba(0,0,0,0.5);
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin: 0;
+    font-size: 1.2em;
 }
 #clicker {
     width: 300px;
@@ -103,6 +122,13 @@ body {
 <div class="container">
     <div id="main">
         <div id="title">CAR CLICKER FUN</div>
+        <div id="version">v1.1</div>
+        <div class="stats">
+            <p>💰 Dinero: $<span id="money">0</span></p>
+            <p>⚡ Por clic: $<span id="moneyPerClick">1</span></p>
+            <p>🕒 Por segundo: $<span id="autoMoney">0</span></p>
+            <p>🚗 Coches: <span id="cars">0</span></p>
+        </div>
         <img src="h.png" id="clicker" alt="Coche">
     </div>
 
@@ -110,54 +136,64 @@ body {
         <h2>Mejoras y Objetos</h2>
 
         <div class="shop-item">
-            <p>🚀 Turbo Boost</p>
-            <button onclick="buyUpgrade('turbo')">Mejorar</button>
+            <p>🚀 Turbo Boost (+1 $/clic)</p>
+            <button onclick="buyUpgrade('turbo',1,0)">Comprar</button>
         </div>
         <div class="shop-item">
-            <p>💎 Nitro</p>
-            <button onclick="buyUpgrade('nitro')">Mejorar</button>
+            <p>💎 Nitro (+5 $/clic, +1 $/seg)</p>
+            <button onclick="buyUpgrade('nitro',5,1)">Comprar</button>
         </div>
         <div class="shop-item">
-            <p>⚡ Motor Pro</p>
-            <button onclick="buyUpgrade('motor')">Mejorar</button>
+            <p>⚡ Motor Pro (+20 $/clic, +5 $/seg)</p>
+            <button onclick="buyUpgrade('motor',20,5)">Comprar</button>
         </div>
         <div class="shop-item">
-            <p>🏁 Llantas Rápidas</p>
-            <button onclick="buyUpgrade('llantas')">Mejorar</button>
+            <p>🏁 Llantas Rápidas (+2 $/clic)</p>
+            <button onclick="buyUpgrade('llantas',2,0)">Comprar</button>
         </div>
         <div class="shop-item">
-            <p>🛠️ Suspensión Mejorada</p>
-            <button onclick="buyUpgrade('suspension')">Mejorar</button>
+            <p>🛠️ Suspensión Mejorada (+0 $/clic, +2 $/seg)</p>
+            <button onclick="buyUpgrade('suspension',0,2)">Comprar</button>
         </div>
         <div class="shop-item">
-            <p>🔥 Escape Deportivo</p>
-            <button onclick="buyUpgrade('escape')">Mejorar</button>
+            <p>🔥 Escape Deportivo (+3 $/clic, +1 $/seg)</p>
+            <button onclick="buyUpgrade('escape',3,1)">Comprar</button>
         </div>
         <div class="shop-item">
-            <p>🎨 Pintura Especial</p>
-            <button onclick="buyUpgrade('pintura')">Mejorar</button>
+            <p>🎨 Pintura Especial (+1 $/clic)</p>
+            <button onclick="buyUpgrade('pintura',1,0)">Comprar</button>
         </div>
         <div class="shop-item">
-            <p>💨 Aerodinámica Avanzada</p>
-            <button onclick="buyUpgrade('aero')">Mejorar</button>
+            <p>💨 Aerodinámica Avanzada (+0 $/clic, +3 $/seg)</p>
+            <button onclick="buyUpgrade('aero',0,3)">Comprar</button>
         </div>
     </div>
 </div>
 
 <script>
-let upgrades = {
-    turbo: 0,
-    nitro: 0,
-    motor: 0,
-    llantas: 0,
-    suspension: 0,
-    escape: 0,
-    pintura: 0,
-    aero: 0
-};
+let money = parseInt(localStorage.getItem('money')) || 0;
+let cars = parseInt(localStorage.getItem('cars')) || 0;
+let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick')) || 1;
+let autoMoney = parseInt(localStorage.getItem('autoMoney')) || 0;
 
 const clicker = document.getElementById('clicker');
 const main = document.getElementById('main');
+const moneyEl = document.getElementById('money');
+const moneyPerClickEl = document.getElementById('moneyPerClick');
+const autoMoneyEl = document.getElementById('autoMoney');
+const carsEl = document.getElementById('cars');
+
+let upgrades = {
+    turbo:0, nitro:0, motor:0, llantas:0,
+    suspension:0, escape:0, pintura:0, aero:0
+};
+
+function updateStats(){
+    moneyEl.textContent = money;
+    moneyPerClickEl.textContent = moneyPerClick;
+    autoMoneyEl.textContent = autoMoney;
+    carsEl.textContent = cars;
+}
 
 function createParticle(x,y){
     const p = document.createElement('div');
@@ -175,25 +211,56 @@ function createParticle(x,y){
 }
 
 clicker.addEventListener('click', ()=>{
+    money += moneyPerClick;
+    cars += 1;
+
     // Animación coche
     clicker.style.transform = 'scale(1.2)';
     clicker.style.boxShadow = '0 0 30px cyan, 0 0 15px magenta';
     setTimeout(()=>{clicker.style.transform='scale(1)'; clicker.style.boxShadow='none';},100);
 
-    // Coordenadas del click
+    // Crear partículas
     const rect = clicker.getBoundingClientRect();
     const mainRect = main.getBoundingClientRect();
     const x = rect.left - mainRect.left + rect.width/2 - 5;
     const y = rect.top - mainRect.top + rect.height/2 - 5;
 
-    // Crear partículas mejoradas
     for(let i=0;i<20;i++) createParticle(x,y);
+
+    updateStats();
+    save();
 });
 
-function buyUpgrade(name){
-    upgrades[name]++;
-    alert(name.toUpperCase() + " mejorado a nivel " + upgrades[name]);
+function buyUpgrade(name, clickBonus, autoBonus){
+    if(money >= 50){ // puedes ajustar precio o añadir variable de precio
+        money -= 50;
+        moneyPerClick += clickBonus;
+        autoMoney += autoBonus;
+        upgrades[name]++;
+        alert(name.toUpperCase() + " nivel " + upgrades[name]);
+        updateStats();
+        save();
+    } else {
+        alert("No tienes suficiente dinero");
+    }
 }
+
+// Auto-money cada segundo
+setInterval(()=>{
+    money += autoMoney;
+    updateStats();
+    save();
+},1000);
+
+function save(){
+    localStorage.setItem('money',money);
+    localStorage.setItem('cars',cars);
+    localStorage.setItem('moneyPerClick',moneyPerClick);
+    localStorage.setItem('autoMoney',autoMoney);
+    localStorage.setItem('upgrades',JSON.stringify(upgrades));
+}
+
+updateStats();
 </script>
 </body>
 </html>
