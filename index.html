@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Car Clicker Mejorado</title>
+<title>Car Clicker Pro</title>
 <style>
 body {
     margin: 0;
@@ -13,6 +13,7 @@ body {
     display: flex;
     justify-content: center;
     min-height: 100vh;
+    overflow: hidden;
 }
 .container {
     display: flex;
@@ -26,6 +27,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
 }
 .stats {
     display: flex;
@@ -86,6 +88,21 @@ body {
     background: #ffc107;
     transform: scale(1.03);
 }
+
+/* Partículas */
+.particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: gold;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleAnim 600ms linear forwards;
+}
+@keyframes particleAnim {
+    0% {opacity:1; transform: translate(0,0) scale(1);}
+    100% {opacity:0; transform: translate(var(--x), var(--y)) scale(0.5);}
+}
 </style>
 </head>
 <body>
@@ -133,6 +150,7 @@ const moneyPerClickEl = document.getElementById('moneyPerClick');
 const autoMoneyEl = document.getElementById('autoMoney');
 const clicker = document.getElementById('clicker');
 const priceEl = [document.getElementById('price1'), document.getElementById('price2'), document.getElementById('price3')];
+const main = document.getElementById('main');
 
 function update() {
     moneyEl.textContent = money;
@@ -144,10 +162,31 @@ function update() {
     }
 }
 
-clicker.addEventListener('click', ()=>{
+function createParticle(x,y){
+    const p = document.createElement('div');
+    p.classList.add('particle');
+    const angle = Math.random()*2*Math.PI;
+    const distance = 50 + Math.random()*30;
+    p.style.left = x+'px';
+    p.style.top = y+'px';
+    p.style.setProperty('--x', Math.cos(angle)*distance+'px');
+    p.style.setProperty('--y', Math.sin(angle)*distance+'px');
+    main.appendChild(p);
+    setTimeout(()=>p.remove(),600);
+}
+
+clicker.addEventListener('click', (e)=>{
     money += moneyPerClick;
+    // Pop coche
     clicker.style.transform = 'scale(1.2)';
     setTimeout(()=>{clicker.style.transform='scale(1)';},100);
+    // Crear partículas en el centro del coche
+    const rect = clicker.getBoundingClientRect();
+    const x = rect.left + rect.width/2 - main.getBoundingClientRect().left;
+    const y = rect.top + rect.height/2 - main.getBoundingClientRect().top;
+    for(let i=0;i<5;i++){ // 5 partículas
+        createParticle(x,y);
+    }
     update();
     save();
 });
@@ -159,7 +198,7 @@ function buyCar(index, clickBonus, autoBonus){
         moneyPerClick += clickBonus;
         autoMoney += autoBonus;
         owned[index] += 1;
-        prices[index] = Math.floor(prices[index]*1.15); // Subida de precio progresiva
+        prices[index] = Math.floor(prices[index]*1.15);
         update();
         save();
     } else {
