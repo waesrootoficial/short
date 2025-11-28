@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+       <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -366,6 +366,35 @@
     }
     drawIntro();
 
+  </script>
+  <script>
+    // === CLICKER UPGRADE SYSTEM ===
+    let upgrade = parseInt(localStorage.getItem('speed_upgrade') || '0',10);
+    function saveUpgrade(){ localStorage.setItem('speed_upgrade', upgrade); }
+
+    // botón UI
+    const ui = document.getElementById('ui');
+    const upCard = document.createElement('div');
+    upCard.className = 'card';
+    upCard.innerHTML = `
+      <div class="title">Mejoras</div>
+      <div class="small">Pulsa para mejorar la velocidad máxima.</div>
+      <button id="upBtn" class="primary">Mejorar Velocidad (+1) — Nivel: <span id="upLvl">${upgrade}</span></button>
+    `;
+    ui.appendChild(upCard);
+
+    const upBtn = upCard.querySelector('#upBtn');
+    const upLvl = upCard.querySelector('#upLvl');
+
+    upBtn.addEventListener('click', ()=>{
+      upgrade++;
+      saveUpgrade();
+      upLvl.textContent = upgrade;
+      state.maxSpeed = 800 + upgrade * 40;
+    });
+
+    // aplicar mejora cargada
+    state.maxSpeed = 800 + upgrade * 40;
   </script>
 </body>
 </html>
