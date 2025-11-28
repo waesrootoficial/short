@@ -1,156 +1,54 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Super Rally Clicker</title>
-<style>
-  body{margin:0;font-family:sans-serif;background:#081826;color:#fff;}
-  canvas{background:linear-gradient(#071426,#02101a);display:block;margin:0 auto;border-radius:12px;}
-  #ui{width:360px;margin:16px auto;}
-  .card{background:rgba(255,255,255,0.05);padding:12px;border-radius:10px;margin-bottom:12px;}
-  button{padding:8px 12px;border-radius:6px;border:0;background:#ffb020;color:#041426;cursor:pointer;font-weight:700;}
-  .row{display:flex;justify-content:space-between;align-items:center;margin-top:6px;}
-  .small{font-size:13px;color:#9aa4b2;}
-</style>
-</head>
-<body>
-<canvas id="game" width="1100" height="640"></canvas>
-<div id="ui">
-  <div class="card">
-    <div class="title">Super Rally Clicker</div>
-    <div class="row"><button id="start">Iniciar</button><button id="pause">Pausa</button></div>
-  </div>
-  <div class="card" id="stats">
-    <div class="small">Velocidad: <span id="speed">0</span></div>
-    <div class="small">Distancia: <span id="distance">0</span></div>
-    <div class="small">Puntuación: <span id="score">0</span></div>
-    <div class="small">Potencia ⚡: <span id="cookies">0</span></div>
-    <div class="small">CPS: <span id="cps">0</span></div>
-  </div>
-  <div class="card" id="shop">
-    <div class="title">Tienda / Mejoras</div>
-  </div>
-</div>
-<script>
-// ======== Juego Rally + Clicker =======
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-const W = canvas.width, H = canvas.height;
+let money = parseInt(localStorage.getItem('money')) || 0;
+let cars = parseInt(localStorage.getItem('cars')) || 0;
+let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick')) || 1;
 
-let running = false, paused=false;
+const moneyDisplay = document.getElementById('money');
+const carsDisplay = document.getElementById('cars');
+const carClick = document.getElementById('carClick');
+const resetButton = document.getElementById('reset');
 
-// Estado jugador y clicker
-let state = {
-  x: W/2, y: H-140, speed:0, maxSpeed:900, accel:1300, brake:2500, drag:0.98,
-  lives:3, score:0, distance:0, cookies:0, cps:0, upgrade:0
-};
-
-// Obstáculos
-let obstacles=[], spawnTimer=0;
-
-// Construcciones automáticas tipo clicker
-let buildings=[
-  {name:'Moto', base:50, cps:1, count:0},
-  {name:'Coche Pro', base:200, cps:5, count:0},
-  {name:'SuperCoche', base:1000, cps:20, count:0}
-];
-
-// UI refs
-const speedUI=document.getElementById('speed');
-const distanceUI=document.getElementById('distance');
-const scoreUI=document.getElementById('score');
-const cookiesUI=document.getElementById('cookies');
-const cpsUI=document.getElementById('cps');
-const startBtn=document.getElementById('start');
-const pauseBtn=document.getElementById('pause');
-const shopDiv=document.getElementById('shop');
-
-// Controles
-const keys={};
-window.addEventListener('keydown', e=>{ keys[e.key.toLowerCase()]=true; if(e.key=='p') paused=!paused; });
-window.addEventListener('keyup', e=>{ keys[e.key.toLowerCase()]=false; });
-
-// Shop render
-function renderShop(){
-  shopDiv.innerHTML='';
-  buildings.forEach((b,i)=>{
-    const cost = Math.floor(b.base*Math.pow(1.3,b.count));
-    const el=document.createElement('div');
-    el.className='small';
-    el.innerHTML=`${b.name} (x<span id='bc${i}'>${b.count}</span>) — Coste ${cost} ⚡ <button data-i='${i}'>Comprar</button>`;
-    shopDiv.appendChild(el);
-    el.querySelector('button').onclick=()=>{
-      if(state.cookies>=cost){ state.cookies-=Math.floor(cost); b.count++; state.cps+=b.cps;
-      el.querySelector('#bc'+i).textContent=b.count; updateUI(); }
-    };
-  });
-}
-renderShop();
-
-// Clicker button
-const genBtn=document.createElement('button'); genBtn.textContent='+1 ⚡';
-genBtn.onclick=()=>{ state.cookies++; updateUI(); };
-shopDiv.appendChild(genBtn);
-
-// Actualización UI
-function updateUI(){
-  speedUI.textContent=Math.round(state.speed);
-  distanceUI.textContent=Math.round(state.distance);
-  scoreUI.textContent=Math.round(state.score);
-  cookiesUI.textContent=Math.round(state.cookies);
-  cpsUI.textContent=Math.round(state.cps);
+function updateDisplay() {
+    moneyDisplay.textContent = money;
+    carsDisplay.textContent = cars;
 }
 
-// Spawn obstáculos
-function spawnObstacle(){
-  obstacles.push({x:Math.random()*(W-80)+40, y:-120, w:40, h:60, speed:200+Math.random()*200});
+// Click en coche
+carClick.addEventListener('click', () => {
+    money += moneyPerClick;
+    updateDisplay();
+    saveGame();
+});
+
+// Comprar coches
+function buyCar(price, increment) {
+    if (money >= price) {
+        money -= price;
+        cars += 1;
+        moneyPerClick += increment;
+        updateDisplay();
+        saveGame();
+    } else {
+        alert("No tienes suficiente dinero!");
+    }
 }
 
-// Update juego
-function update(dt){
-  if(paused) return;
-  const up=keys['arrowup']||keys['w'], down=keys['arrowdown']||keys['s'], left=keys['arrowleft']||keys['a'], right=keys['arrowright']||keys['d'];
-  if(up) state.speed+=state.accel*dt;
-  if(down) state.speed-=state.brake*dt;
-  state.speed*=Math.pow(state.drag, dt*60);
-  state.speed=Math.max(-200, Math.min(state.maxSpeed+state.upgrade*50,state.speed));
-
-  if(left) state.x-=state.speed*dt*0.3;
-  if(right) state.x+=state.speed*dt*0.3;
-  state.x=Math.max(40, Math.min(W-40,state.x));
-
-  state.distance+=state.speed*dt*0.1; state.score+=state.speed*dt*0.05;
-
-  spawnTimer+=dt;
-  if(spawnTimer>0.8){ spawnObstacle(); spawnTimer=0; }
-  for(let i=obstacles.length-1;i>=0;i--){
-    obstacles[i].y+=obstacles[i].speed*dt+state.speed*0.1;
-    if(obstacles[i].y>H+100) obstacles.splice(i,1);
-  }
-  // Clicker producción automática
-  state.cookies+=state.cps*dt;
-  updateUI();
+// Guardar progreso
+function saveGame() {
+    localStorage.setItem('money', money);
+    localStorage.setItem('cars', cars);
+    localStorage.setItem('moneyPerClick', moneyPerClick);
 }
 
-// Render
-function render(){
-  ctx.clearRect(0,0,W,H);
-  // carretera
-  ctx.fillStyle='#222'; ctx.fillRect(0,0,W,H);
-  // jugador
-  ctx.fillStyle='#ffb020'; ctx.fillRect(state.x-20,state.y-34,40,68);
-  // obstáculos
-  ctx.fillStyle='#ff6b6b'; obstacles.forEach(ob=>{ ctx.fillRect(ob.x-ob.w/2,ob.y-ob.h/2,ob.w,ob.h); });
-}
+// Resetear juego
+resetButton.addEventListener('click', () => {
+    if(confirm("¿Estás seguro de resetear?")) {
+        money = 0;
+        cars = 0;
+        moneyPerClick = 1;
+        updateDisplay();
+        saveGame();
+    }
+});
 
-// Loop
-let lastTs=performance.now();
-function loop(ts){ if(!running) return; const dt=Math.min(1/30,(ts-lastTs)/1000); lastTs=ts; lastTs=ts; update(dt); render(); requestAnimationFrame(loop);}
+updateDisplay();
 
-// Iniciar juego
-startBtn.onclick=()=>{ running=true; state.speed=0; state.distance=0; state.score=0; obstacles=[]; lastTs=performance.now(); loop(lastTs); };
-pauseBtn.onclick=()=>{ paused=!paused; };
-</script>
-</body>
-</html>
