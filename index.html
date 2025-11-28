@@ -3,74 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Car Clicker Ultra Modern v3.1</title>
+<title>Car Clicker Ultra v4.0</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background:linear-gradient(to bottom,#0f2027,#203a43,#2c5364);
-    color:#fff;
-    display:flex;
-    justify-content:center;
-    min-height:100vh;
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:linear-gradient(to bottom,#0f2027,#203a43,#2c5364);color:#fff;display:flex;justify-content:center;min-height:100vh;}
+
+/* Container */
+.container{display:flex;max-width:1400px;width:100%;padding:20px;gap:20px;}
+
+/* Main panel */
+#main{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;}
+
+/* Título neón animado */
+#title{
+    font-size:3em;font-weight:bold;
+    background:linear-gradient(90deg,#00ffff,#ff00ff,#ffff00,#ff4500,#00ff00);
+    background-size:300% 300%;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:gradientAnim 4s ease infinite;
+    margin-bottom:5px;text-align:center;
+    text-shadow:0 0 10px #00ffff,0 0 20px #ff00ff,0 0 30px #ffff00;
 }
+@keyframes gradientAnim{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
 
-/* Container principal */
-.container { display:flex; max-width:1400px; width:100%; padding:20px; gap:20px; }
+/* Version */
+#version{font-size:1em;color:#ccc;margin-bottom:15px;}
 
-/* Panel principal */
-#main { flex:1; display:flex; flex-direction:column; align-items:center; position:relative; }
+/* Stats */
+.stats{display:flex;flex-wrap:wrap;gap:15px;justify-content:center;margin-bottom:20px;}
+.stats p{background:rgba(0,0,0,0.6);padding:15px 20px;border-radius:20px;font-size:1.4em;text-align:center;box-shadow:0 0 15px rgba(0,0,0,0.5);transition: transform 0.2s;}
+.stats p:hover{transform: scale(1.05);}
 
-/* Título moderno animado */
-#title {
-    font-size:3em;
-    font-weight:bold;
-    background: linear-gradient(90deg, #00ffff, #ff00ff, #ffff00, #ff4500, #00ff00);
-    background-size: 300% 300%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: gradientAnim 4s ease infinite;
-    margin-bottom:5px;
-    text-align:center;
-    text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
-}
-@keyframes gradientAnim {
-    0% {background-position:0% 50%;}
-    50% {background-position:100% 50%;}
-    100% {background-position:0% 50%;}
-}
+/* Coche */
+#clicker{width:300px;cursor:pointer;border-radius:25px;transition: transform 0.15s ease, box-shadow 0.15s ease;}
 
-#version { font-size:1em; color:#ccc; margin-bottom:15px; }
+/* Tienda */
+#shop{width:400px;background:rgba(0,0,0,0.7);border-radius:25px;padding:20px;max-height:80vh;overflow-y:auto;}
+#shop h2{text-align:center;font-size:2em;margin-bottom:20px;}
+.shop-item{background:rgba(255,255,255,0.1);padding:15px;border-radius:20px;margin-bottom:15px;display:flex;justify-content:space-between;align-items:center;transition: transform 0.15s, background 0.15s;}
+.shop-item:hover{transform: scale(1.04);background:rgba(255,255,255,0.15);}
+.shop-item p{font-size:1.2em;flex:1;}
+.shop-item button{padding:12px 18px;font-size:1.2em;border:none;border-radius:15px;background:linear-gradient(90deg,#ff6a00,#ee0979);color:#fff;cursor:pointer;transition: transform 0.1s, background 0.15s;}
+.shop-item button:hover{transform: scale(1.05);background:linear-gradient(90deg,#ff9a00,#ff00ff);}
+.shop-item .count{margin-left:10px;font-size:1.2em;color:#00ffff;}
 
-/* Estadísticas modernas */
-.stats { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-bottom:20px; }
-.stats p { background:rgba(0,0,0,0.6); padding:15px 20px; border-radius:20px; font-size:1.4em; text-align:center; box-shadow:0 0 15px rgba(0,0,0,0.5); transition: transform 0.2s; }
-.stats p:hover { transform: scale(1.05); }
-
-/* Coche clicable */
-#clicker { width:300px; cursor:pointer; border-radius:25px; transition: transform 0.15s ease, box-shadow 0.15s ease; }
-
-/* Tienda moderna */
-#shop { width:400px; background:rgba(0,0,0,0.7); border-radius:25px; padding:20px; max-height:80vh; overflow-y:auto; }
-#shop h2 { text-align:center; font-size:2em; margin-bottom:20px; }
-.shop-item { background:rgba(255,255,255,0.1); padding:15px; border-radius:20px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; transition: transform 0.15s, background 0.15s; }
-.shop-item:hover { transform: scale(1.04); background:rgba(255,255,255,0.15); }
-.shop-item p { font-size:1.2em; flex:1; }
-.shop-item button { padding:12px 18px; font-size:1.2em; border:none; border-radius:15px; background:linear-gradient(90deg,#ff6a00,#ee0979); color:#fff; cursor:pointer; transition: transform 0.1s, background 0.15s; }
-.shop-item button:hover { transform: scale(1.05); background:linear-gradient(90deg,#ff9a00,#ff00ff); }
-.shop-item .count { margin-left:10px; font-size:1.2em; color:#00ffff; }
-
-/* Partículas avanzadas */
-.particle { position:absolute; width:12px; height:12px; border-radius:50%; pointer-events:none; animation:particleAnim 800ms ease-out forwards; opacity:0.9; }
-@keyframes particleAnim { 0% {opacity:1; transform:translate(0,0) scale(1);} 100% {opacity:0; transform:translate(var(--x),var(--y)) scale(0);} }
-
+/* Partículas */
+.particle{position:absolute;width:12px;height:12px;border-radius:50%;pointer-events:none;animation:particleAnim 800ms ease-out forwards;opacity:0.9;}
+@keyframes particleAnim{0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(0);}}
 </style>
 </head>
 <body>
 <div class="container">
     <div id="main">
-        <div id="title">CAR CLICKER ULTRA MODERN</div>
-        <div id="version">v3.1</div>
+        <div id="title">CAR CLICKER ULTRA</div>
+        <div id="version">v4.0</div>
         <div class="stats">
             <p>💰 Dinero: $<span id="money">0</span></p>
             <p>⚡ Por clic: $<span id="moneyPerClick">1</span></p>
@@ -94,11 +81,12 @@ body {
 </div>
 
 <script>
+// Variables iniciales
 let money = parseInt(localStorage.getItem('money'))||0;
 let cars = parseInt(localStorage.getItem('cars'))||0;
 let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick'))||1;
 let autoMoney = parseInt(localStorage.getItem('autoMoney'))||0;
-let upgrades = JSON.parse(localStorage.getItem('upgrades')) || {turbo:0,nitro:0,motor:0,llantas:0,suspension:0,escape:0,pintura:0,aero:0};
+let upgrades = JSON.parse(localStorage.getItem('upgrades'))||{turbo:0,nitro:0,motor:0,llantas:0,suspension:0,escape:0,pintura:0,aero:0};
 
 const clicker=document.getElementById('clicker');
 const main=document.getElementById('main');
@@ -107,6 +95,7 @@ const moneyPerClickEl=document.getElementById('moneyPerClick');
 const autoMoneyEl=document.getElementById('autoMoney');
 const carsEl=document.getElementById('cars');
 
+// Actualizar stats y contadores
 function updateStats(){
     moneyEl.textContent=money;
     moneyPerClickEl.textContent=moneyPerClick;
@@ -119,16 +108,14 @@ function updateStats(){
     updateCarVisual();
 }
 
+// Cambiar visual del coche según mejoras
 function updateCarVisual(){
-    if(upgrades.motor>=5){
-        clicker.style.filter='hue-rotate(180deg) saturate(150%)';
-    } else if(upgrades.turbo>=5){
-        clicker.style.filter='hue-rotate(90deg) saturate(120%)';
-    } else {
-        clicker.style.filter='none';
-    }
+    if(upgrades.motor>=5){ clicker.style.filter='hue-rotate(180deg) saturate(150%)'; }
+    else if(upgrades.turbo>=5){ clicker.style.filter='hue-rotate(90deg) saturate(120%)'; }
+    else{ clicker.style.filter='none'; }
 }
 
+// Partículas
 function createParticle(x,y,type='default'){
     const p=document.createElement('div');
     p.classList.add('particle');
@@ -145,9 +132,9 @@ function createParticle(x,y,type='default'){
     setTimeout(()=>p.remove(),800);
 }
 
+// Click en coche
 clicker.addEventListener('click', ()=>{
-    money+=moneyPerClick;
-    cars+=1;
+    money+=moneyPerClick; cars+=1;
     clicker.style.transform='scale(1.2)';
     clicker.style.boxShadow='0 0 30px #00ffff,0 0 15px #ff00ff';
     setTimeout(()=>{clicker.style.transform='scale(1)'; clicker.style.boxShadow='none';},100);
@@ -164,6 +151,7 @@ clicker.addEventListener('click', ()=>{
     save();
 });
 
+// Comprar mejora
 function buyUpgrade(name,clickBonus,autoBonus,price){
     if(money>=price){
         money-=price;
@@ -175,12 +163,10 @@ function buyUpgrade(name,clickBonus,autoBonus,price){
     }
 }
 
-setInterval(()=>{
-    money+=autoMoney;
-    updateStats();
-    save();
-},1000);
+// Auto-money
+setInterval(()=>{ money+=autoMoney; updateStats(); save(); },1000);
 
+// Guardado
 function save(){
     localStorage.setItem('money',money);
     localStorage.setItem('cars',cars);
