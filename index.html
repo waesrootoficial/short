@@ -1,191 +1,204 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Car Clicker Estilo Cookie</title>
-<style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
-    color: #fff;
-}
-
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-    min-height: 100vh;
-}
-
-#game {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.stats {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
-
-.stats p {
-    font-size: 1.2em;
-    margin: 0;
-    background: rgba(0,0,0,0.6);
-    padding: 10px 15px;
-    border-radius: 10px;
-}
-
-#clicker {
-    font-size: 150px;
-    cursor: pointer;
-    transition: transform 0.1s;
-}
-
-#clicker:active {
-    transform: scale(1.2) rotate(-10deg);
-}
-
-#clickCar {
-    margin-top: 15px;
-    padding: 12px 25px;
-    font-size: 1.2em;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    background-color: #ffd700;
-    transition: 0.2s;
-}
-
-#clickCar:hover {
-    background-color: #ffc107;
-    transform: scale(1.05);
-}
-
-/* Tienda al lado derecho estilo Cookie Clicker */
-#shop {
-    margin-left: 30px;
-    width: 250px;
-    background: rgba(0,0,0,0.5);
-    padding: 15px;
-    border-radius: 12px;
-    height: fit-content;
-}
-
-.shop-item {
-    background: rgba(255,255,255,0.1);
-    margin-bottom: 12px;
-    padding: 10px;
-    border-radius: 10px;
-}
-
-.shop-item button {
-    margin-top: 5px;
-    width: 100%;
-    background-color: #ffd700;
-    border: none;
-    padding: 8px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.shop-item button:hover {
-    background-color: #ffc107;
-    transform: scale(1.03);
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Clicker - Estilo Clicker Moderno</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .stats p {
+      background: rgba(0,0,0,0.5);
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin: 0;
+      font-size: 1.1em;
+    }
+    #clicker {
+      font-size: 160px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s;
+    }
+    #clicker:active {
+      transform: scale(1.2) rotate(-10deg);
+    }
+    #shop {
+      width: 280px;
+      margin-left: 30px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 10px;
+      padding: 15px;
+      box-sizing: border-box;
+      height: fit-content;
+    }
+    #shop h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+    .shop-item {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+    .shop-item p {
+      margin: 0 0 8px 0;
+    }
+    .shop-item button {
+      width: 100%;
+      padding: 8px;
+      background: #ffd700;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .shop-item button:hover {
+      background: #ffc107;
+      transform: scale(1.03);
+    }
+    #reset {
+      width: 100%;
+      padding: 8px;
+      background: #ff4c4c;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 1em;
+      margin-top: 10px;
+      transition: background 0.15s;
+    }
+    #reset:hover {
+      background: #e04343;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-    <div id="game">
-        <div class="stats">
-            <p>💰 Dinero: $<span id="money">0</span></p>
-            <p>🚗 Coches: <span id="cars">0</span></p>
-            <p>⚡ Por clic: $<span id="moneyPerClick">1</span></p>
-            <p>🕒 Por segundo: $<span id="autoMoney">0</span></p>
-        </div>
-
-        <div id="clicker">🚗</div>
-        <button id="clickCar">Clic en el coche!</button>
+  <div class="container">
+    <div id="main">
+      <div class="stats">
+        <p>💰 Dinero: $<span id="money">0</span></p>
+        <p>🚗 Coches: <span id="cars">0</span></p>
+        <p>⚡ Por clic: $<span id="moneyPerClick">1</span></p>
+        <p>🕒 Por segundo: $<span id="autoMoney">0</span></p>
+      </div>
+      <div id="clicker">🚗</div>
     </div>
 
     <div id="shop">
-        <h3>Tienda</h3>
-        <div class="shop-item">
-            <p>🚙 Mini Coche (+1 $/clic) - $50</p>
-            <button onclick="buyCar(50,1,0)">Comprar</button>
-        </div>
-        <div class="shop-item">
-            <p>🚐 SUV (+5 $/clic, +1 $/seg) - $250</p>
-            <button onclick="buyCar(250,5,1)">Comprar</button>
-        </div>
-        <div class="shop-item">
-            <p>🏎️ Supercar (+20 $/clic, +5 $/seg) - $1000</p>
-            <button onclick="buyCar(1000,20,5)">Comprar</button>
-        </div>
-        <button id="reset" style="margin-top:10px;width:100%;">🔄 Resetear Juego</button>
+      <h2>Tienda de Coches</h2>
+      <div class="shop-item">
+        <p>🚙 Mini Coche (+1 $/clic) — $50</p>
+        <button onclick="buyCar(50,1,0)">Comprar</button>
+      </div>
+      <div class="shop-item">
+        <p>🚐 SUV (+5 $/clic, +1 $/seg) — $250</p>
+        <button onclick="buyCar(250,5,1)">Comprar</button>
+      </div>
+      <div class="shop-item">
+        <p>🏎️ Supercar (+20 $/clic, +5 $/seg) — $1000</p>
+        <button onclick="buyCar(1000,20,5)">Comprar</button>
+      </div>
+      <button id="reset">🔄 Resetear Juego</button>
     </div>
-</div>
+  </div>
 
-<script>
-let money = parseInt(localStorage.getItem('money')) || 0;
-let cars = parseInt(localStorage.getItem('cars')) || 0;
-let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick')) || 1;
-let autoMoney = parseInt(localStorage.getItem('autoMoney')) || 0;
+  <script>
+    // Variables
+    let money = parseInt(localStorage.getItem('money')) || 0;
+    let cars = parseInt(localStorage.getItem('cars')) || 0;
+    let moneyPerClick = parseInt(localStorage.getItem('moneyPerClick')) || 1;
+    let autoMoney = parseInt(localStorage.getItem('autoMoney')) || 0;
 
-const moneyDisplay = document.getElementById('money');
-const carsDisplay = document.getElementById('cars');
-const moneyPerClickDisplay = document.getElementById('moneyPerClick');
-const autoMoneyDisplay = document.getElementById('autoMoney');
-const clicker = document.getElementById('clicker');
-const clickButton = document.getElementById('clickCar');
-const resetButton = document.getElementById('reset');
+    // Elementos DOM
+    const moneyEl = document.getElementById('money');
+    const carsEl = document.getElementById('cars');
+    const moneyPerClickEl = document.getElementById('moneyPerClick');
+    const autoMoneyEl = document.getElementById('autoMoney');
+    const clicker = document.getElementById('clicker');
+    const resetBtn = document.getElementById('reset');
 
-function updateDisplay(){
-    moneyDisplay.textContent = money;
-    carsDisplay.textContent = cars;
-    moneyPerClickDisplay.textContent = moneyPerClick;
-    autoMoneyDisplay.textContent = autoMoney;
-}
-
-clicker.addEventListener('click', ()=>{ money += moneyPerClick; updateDisplay(); saveGame(); });
-clickButton.addEventListener('click', ()=>{ money += moneyPerClick; updateDisplay(); saveGame(); });
-
-function buyCar(price,clickBonus,autoBonus){
-    if(money>=price){
-        money-=price;
-        cars+=1;
-        moneyPerClick+=clickBonus;
-        autoMoney+=autoBonus;
-        updateDisplay();
-        saveGame();
-    } else { alert("No tienes suficiente dinero!"); }
-}
-
-setInterval(()=>{ money+=autoMoney; updateDisplay(); saveGame(); },1000);
-
-function saveGame(){
-    localStorage.setItem('money',money);
-    localStorage.setItem('cars',cars);
-    localStorage.setItem('moneyPerClick',moneyPerClick);
-    localStorage.setItem('autoMoney',autoMoney);
-}
-
-resetButton.addEventListener('click',()=>{
-    if(confirm("¿Seguro que quieres resetear?")){
-        money=0; cars=0; moneyPerClick=1; autoMoney=0;
-        updateDisplay(); saveGame();
+    function update() {
+      moneyEl.textContent = money;
+      carsEl.textContent = cars;
+      moneyPerClickEl.textContent = moneyPerClick;
+      autoMoneyEl.textContent = autoMoney;
     }
-});
 
-updateDisplay();
-</script>
+    clicker.addEventListener('click', () => {
+      money += moneyPerClick;
+      update();
+      save();
+    });
+
+    function buyCar(price, clickBonus, autoBonus) {
+      if (money >= price) {
+        money -= price;
+        cars += 1;
+        moneyPerClick += clickBonus;
+        autoMoney += autoBonus;
+        update();
+        save();
+      } else {
+        alert('No tienes suficiente dinero.');
+      }
+    }
+
+    setInterval(() => {
+      money += autoMoney;
+      update();
+      save();
+    }, 1000);
+
+    resetBtn.addEventListener('click', () => {
+      if (confirm('¿Resetear progreso?')) {
+        money = 0;
+        cars = 0;
+        moneyPerClick = 1;
+        autoMoney = 0;
+        update();
+        save();
+      }
+    });
+
+    function save() {
+      localStorage.setItem('money', money);
+      localStorage.setItem('cars', cars);
+      localStorage.setItem('moneyPerClick', moneyPerClick);
+      localStorage.setItem('autoMoney', autoMoney);
+    }
+
+    update();
+  </script>
 </body>
 </html>
